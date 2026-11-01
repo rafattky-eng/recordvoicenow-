@@ -1,4 +1,4 @@
-# RecordVoiceNow · V1.2.0
+# RecordVoiceNow · V1.3.0
 
 A private, static, browser-only voice & screen recorder designed for iPhone (Safari) and modern browsers.  
 Microphone and screen recordings stay in IndexedDB on the device — **no account, no server upload**.
@@ -31,7 +31,7 @@ Microphone and screen recordings stay in IndexedDB on the device — **no accoun
 ```
 index.html      # App UI + logic
 manifest.json   # PWA manifest
-sw.js           # Service Worker (cache version: recordvoicenow-v1.2.0)
+sw.js           # Service Worker (cache version: recordvoicenow-v1.3.0)
 logo.svg        # Icon-only logo mark (header + favicon)
 icon-192.png    # PWA icon (full logo with wordmark)
 apple-touch-icon.png  # iPhone Home Screen icon (180x180)
@@ -107,4 +107,4 @@ Recommended sizes: 192×192 and 512×512, with the same rounded-rect background 
 ## License / Copyright
 
 © 2026 Rafat Kotaki. All rights reserved.  
-RecordVoiceNow · V1.2.0
+RecordVoiceNow · V1.3.0
