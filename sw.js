@@ -1,5 +1,5 @@
 /* Offline app shell. Bump CACHE_VERSION when publishing updates. */
-const CACHE_VERSION = 'recordvoicenow-v1.4.1';
+const CACHE_VERSION = 'recvoicenow-v1.5.0';
 const APP_SHELL = [
   './',
   './index.html',

@@ -1,6 +1,6 @@
 {
-  "name": "RecordVoiceNow",
-  "short_name": "RecordVoice",
+  "name": "RecVoiceNow",
+  "short_name": "RecVoiceNow",
   "description": "Private voice and browser-supported screen recording. Recordings stay on this device.",
   "start_url": "./",
   "scope": "./",

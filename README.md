@@ -1,4 +1,4 @@
-# RecordVoiceNow · V1.4.1
+# RecVoiceNow · V1.5.0
 
 A private, static, browser-only voice & screen recorder designed for iPhone (Safari) and modern browsers.  
 Microphone and screen recordings stay in IndexedDB on the device — **no account, no server upload**.
@@ -14,6 +14,8 @@ Microphone and screen recordings stay in IndexedDB on the device — **no accoun
 - Local library with Play / Download / Share / Rename / Delete
 - Live waveform visualization for voice mode
 - Dark / Light theme toggle (remembers preference, defaults to system appearance)
+- English / Japanese interface (EN / JP buttons, remembered)
+- Reset button returns to step 1 (discards the current take)
 - Installable PWA (Add to Home Screen on iPhone)
 - Offline app shell via Service Worker
 
@@ -107,4 +109,4 @@ Recommended sizes: 192×192 and 512×512, with the same rounded-rect background 
 ## License / Copyright
 
 © 2026 Rafat Kotaki. All rights reserved.  
-RecordVoiceNow · V1.4.1
+RecVoiceNow · V1.5.0
