@@ -31,9 +31,10 @@ Microphone and screen recordings stay in IndexedDB on the device — **no accoun
 ```
 index.html      # App UI + logic
 manifest.json   # PWA manifest
-sw.js           # Service Worker (cache version: recordvoicenow-v1.0.0)
-logo.svg        # Vector logo / favicon
-icon-192.png    # PWA / Apple touch icon
+sw.js           # Service Worker (cache version: recordvoicenow-v1.0.2)
+logo.svg        # Icon-only logo mark (header + favicon)
+icon-192.png    # PWA icon (full logo with wordmark)
+apple-touch-icon.png  # iPhone Home Screen icon (180x180)
 icon-512.png    # PWA high-res icon
 README.md       # This file
 ```
@@ -45,7 +46,7 @@ README.md       # This file
 ### Option A — Connect GitHub (automatic deploys)
 
 1. Create a new GitHub repository.
-2. Push the contents of this folder (the 7 files above) to the repository root.
+2. Push the contents of this folder (the files above) to the repository root.
 3. In Cloudflare Dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
 4. Select the repository.
 5. Framework preset: **None**.

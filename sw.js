@@ -1,12 +1,13 @@
 /* Offline app shell. Bump CACHE_VERSION when publishing updates. */
-const CACHE_VERSION = 'recordvoicenow-v1.0.0';
+const CACHE_VERSION = 'recordvoicenow-v1.0.2';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.json',
   './logo.svg',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './apple-touch-icon.png'
 ];
 
 self.addEventListener('install', event => {
