@@ -61,6 +61,8 @@ button:disabled { opacity: .42; cursor: not-allowed; }
   color: var(--ink); font-size: 20px; line-height: 1; display: grid; place-items: center; flex-shrink: 0;
   transition: transform .15s, border-color .2s;
 }
+.top .theme-btn + .theme-btn { margin-left: -4px; }
+#resetBtn { font-size: 22px; font-weight: 700; color: var(--blue); }
 .theme-btn:active { transform: scale(.93); border-color: var(--blue); }
 
 /* Steps strip */
@@ -174,6 +176,7 @@ footer .copy { font-weight: 700; margin-bottom: 2px; }
       <div class="brand">RecordVoice<b>Now</b></div>
       <div class="tag">Private · Stored on this device</div>
     </div>
+    <button type="button" class="theme-btn" id="resetBtn" aria-label="Reset and start a fresh recording" title="Reset">↺</button>
     <button type="button" class="theme-btn" id="themeToggle" aria-label="Toggle dark / light mode" title="Toggle theme">🌓</button>
   </header>
 
@@ -253,12 +256,12 @@ footer .copy { font-weight: 700; margin-bottom: 2px; }
 
   <footer>
     <div class="copy">© 2026 Rafat Kotaki. All rights reserved.</div>
-    <div>RecordVoiceNow · V1.1.0</div>
+    <div>RecordVoiceNow · V1.2.0</div>
   </footer>
 </main>
 
 <script>
-/* RecordVoiceNow V1.1.0 — browser-only recorder. Data stays in IndexedDB on this device. */
+/* RecordVoiceNow V1.2.0 — browser-only recorder. Data stays in IndexedDB on this device. */
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
@@ -672,6 +675,7 @@ footer .copy { font-weight: 700; margin-bottom: 2px; }
         createdAt: Date.now(),
         blob
       });
+      blob.saved = true;
       message('Saved on this device.');
       await renderLibrary();
     } catch (e) {
@@ -704,6 +708,40 @@ footer .copy { font-weight: 700; margin-bottom: 2px; }
     $('recorder').classList.add('hidden');
     $('home').classList.remove('hidden');
   };
+
+  // Reset: discard the current take and return to a fresh, ready-to-record state
+  function resetRecording() {
+    if ($('recorder').classList.contains('hidden')) return; // nothing to reset on the home screen
+    const active = recorder && recorder.state !== 'inactive';
+    const unsaved = blob && !blob.saved;
+    if ((active || unsaved) && !confirm('Discard this recording and start fresh?')) return;
+    vibrate();
+    if (recorder) {
+      recorder.ondataavailable = null;
+      recorder.onstop = null;
+      recorder.onerror = null;
+      if (recorder.state !== 'inactive') { try { recorder.stop(); } catch {} }
+    }
+    recorder = null;
+    clearTick();
+    stopTracks();
+    chunks = []; blob = null; elapsed = 0; paused = false; startedAt = 0;
+    ['audioPreview', 'videoPreview'].forEach(id => {
+      const el = $(id);
+      if (el.src) { try { URL.revokeObjectURL(el.src); } catch {} }
+      el.pause?.(); el.removeAttribute('src'); el.load?.(); el.classList.add('hidden');
+    });
+    $('livePreview').classList.add('hidden');
+    $('previewArea').classList.add('hidden');
+    $('activeControls').classList.add('hidden');
+    $('idleControls').classList.remove('hidden');
+    $('pauseBtn').textContent = 'Pause';
+    $('timer').textContent = '00:00';
+    const c = $('wave'); c.getContext('2d').clearRect(0, 0, c.width, c.height);
+    setStatus('Ready to record');
+    message(mode === 'voice' ? 'Fresh start. Tap REC when ready.' : 'Fresh start. Tap REC to choose a screen or tab.');
+  }
+  $('resetBtn').onclick = resetRecording;
   $('startBtn').onclick = start;
   $('pauseBtn').onclick = pause;
   $('stopBtn').onclick = stop;
