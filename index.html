@@ -239,7 +239,8 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
     <h2 id="modeTitle">Voice Recording</h2>
     <p class="muted" id="modeDescription">Microphone recording</p>
     <div id="screenNotice" class="notice hidden">
-      <b>iPhone limitation:</b> Safari does not provide reliable access to system/app audio. Screen capture may be unavailable or stop when the app is backgrounded. For dependable system recording use iOS Control Center → Screen Recording.
+      <b>On the iPhone prompt, tap “Share Entire Screen”</b> to record beyond Safari (the default “Safari” choice records only this app). Sound from other apps is usually not included, and recording may pause when you leave Safari. For reliable full-phone recording with sound, use the other method below.
+      <div class="controls" style="margin-top:10px"><button type="button" class="smallbtn" id="altMethod">Other method: Control Center ›</button></div>
     </div>
     <div id="ambientNotice" class="notice hidden">
       <b>Keep this screen open.</b> iPhone pauses web apps when you switch apps or lock the phone, so recording works only while this app stays on screen. We keep the display awake for you. Place the phone near the sound source for the best result.
@@ -306,7 +307,7 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
 
   <footer>
     <div class="copy">© 2026 Rafat Kotaki. All rights reserved.</div>
-    <div>RecordVoiceNow · V1.4.0</div>
+    <div>RecordVoiceNow · V1.4.1</div>
   </footer>
 </main>
 
@@ -316,7 +317,7 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
 </div>
 
 <script>
-/* RecordVoiceNow V1.4.0 — browser-only recorder. Data stays in IndexedDB on this device. */
+/* RecordVoiceNow V1.4.1 — browser-only recorder. Data stays in IndexedDB on this device. */
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
@@ -326,7 +327,7 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
   let db, mode = 'voice', stream = null, recorder = null, chunks = [], blob = null;
   let startedAt = 0, elapsed = 0, tick = null, paused = false;
   let audioCtx, analyser, raf, currentMime = 'audio/webm';
-  let wakeLock = null, interrupted = false;
+  let wakeLock = null, interrupted = false, peak = 0, silenceTimer = null;
   const isAudio = () => mode !== 'screen';
 
   // ——— Theme (dark + gold by default) ———
@@ -358,7 +359,7 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
     if (!$('home').classList.contains('hidden')) return 'home';
     if (!$('previewArea').classList.contains('hidden')) return (blob && blob.saved) ? 'saved' : 'preview';
     if (!$('activeControls').classList.contains('hidden')) return 'rec';
-    if (!$('screenGuide').classList.contains('hidden')) return 'guide';
+    if (!$('screenGuide').classList.contains('hidden') && $('idleControls').classList.contains('hidden')) return 'guide';
     return 'idle';
   }
   const GUIDE = {
@@ -580,6 +581,7 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
   });
   function stopTracks() {
     releaseWake();
+    clearTimeout(silenceTimer);
     if (stream) {
       stream.getTracks().forEach(t => t.stop());
       stream = null;
@@ -610,6 +612,9 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     }
+    let dev = 0;
+    for (let i = 0; i < data.length; i++) dev = Math.max(dev, Math.abs(data[i] - 128));
+    peak = Math.max(peak, dev);
     ctx.lineWidth = 3;
     ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--gold').trim() || '#d4b062';
     ctx.stroke();
@@ -642,16 +647,25 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
       if (isAudio()) {
         if (!navigator.mediaDevices?.getUserMedia)
           throw Error('Microphone recording is not supported in this browser. Open this page in Safari over HTTPS.');
-        stream = await navigator.mediaDevices.getUserMedia({
-          audio: mode === 'ambient'
-            ? { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
-            : { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
-        });
+        const tuned = mode === 'ambient'
+          ? { echoCancellation: false, noiseSuppression: false, autoGainControl: true }
+          : { echoCancellation: true, noiseSuppression: true, autoGainControl: true };
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: tuned });
+        } catch (err) {
+          if (err && (err.name === 'OverconstrainedError' || err.name === 'TypeError')) stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          else throw err;
+        }
         currentMime = chooseMime(['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus']) || '';
       } else {
         if (!navigator.mediaDevices?.getDisplayMedia)
           throw Error('Screen capture is not available in this browser.');
-        stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+        try {
+          stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+        } catch (err) {
+          if (err && (err.name === 'TypeError' || err.name === 'OverconstrainedError')) stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+          else throw err;
+        }
         currentMime = chooseMime(['video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm']) || '';
         $('livePreview').srcObject = stream;
         $('livePreview').classList.remove('hidden');
@@ -686,6 +700,11 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
 
       recorder.start(1000);
       acquireWake();
+      peak = 0; clearTimeout(silenceTimer);
+      if (isAudio()) silenceTimer = setTimeout(() => {
+        if (recorder && recorder.state === 'recording' && audioCtx && audioCtx.state === 'running' && peak < 2)
+          message('No sound is reaching the microphone yet. Check that nothing else is using it (a call or another recorder), that Safari has microphone access (Settings → Safari → Microphone), and hold the phone close to the sound. Note: iPhone may pause or quieten other apps while this page uses the microphone.');
+      }, 5000);
       startedAt = Date.now();
       elapsed = 0;
       paused = false;
@@ -702,6 +721,7 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
       if (isAudio() && stream.getAudioTracks()[0]) {
         try {
           audioCtx = new AudioContext();
+          if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
           analyser = audioCtx.createAnalyser();
           analyser.fftSize = 1024;
           audioCtx.createMediaStreamSource(stream).connect(analyser);
@@ -871,6 +891,7 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
     $('importFile').value = '';
   }
   $('importBtn').onclick = () => $('importFile').click();
+  $('altMethod').onclick = () => { $('screenGuide').classList.remove('hidden'); $('screenGuide').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
   $('importLib').onclick = () => $('importFile').click();
   $('importFile').onchange = e => importFiles([...e.target.files]);
   $('startBtn').onclick = start;
