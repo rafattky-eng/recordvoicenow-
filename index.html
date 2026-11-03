@@ -7,1207 +7,702 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RecVoiceNow">
-<meta name="description" content="Private browser-based voice and screen recorder. Recordings stay on this device.">
+<meta name="description" content="Save any sound on your iPhone in seconds. Private, no account, stored only on this device.">
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./logo.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-<title>RecVoiceNow</title>
+<title>RecVoiceNow — Save Any Sound</title>
 <style>
 :root, [data-theme="dark"] {
   color-scheme: dark;
-  --bg: #05070c; --panel: #0c1a33; --panel2: #13264a; --ink: #f4f1e8; --muted: #9db0d1;
-  --line: rgba(212,176,98,.28); --gold: #d4b062; --gold2: #b8923f; --goldtxt: #1a1305;
-  --track: #1d2c4c; --red: #e5243b; --green: #3fa66b; --bar: rgba(5,7,12,.92);
-  --shadow: 0 10px 30px rgba(0,0,0,.55); --glow: 0 0 24px rgba(212,176,98,.16);
-  --radius: 22px;
+  --bg: #05070c; --panel: #0c1526; --panel2: #121e36; --ink: #f5f1e8; --muted: #8fa3c4;
+  --line: rgba(212,176,98,.22); --gold: #d4b062; --gold2: #b8923f; --goldtxt: #1a1305;
+  --red: #e11d48; --green: #22c55e; --blue: #3b82f6;
+  --shadow: 0 12px 40px rgba(0,0,0,.5); --radius: 20px;
+  --safe-t: env(safe-area-inset-top); --safe-b: env(safe-area-inset-bottom);
 }
 [data-theme="light"] {
   color-scheme: light;
-  --bg: #f7f2e6; --panel: #ffffff; --panel2: #f3ecda; --ink: #0f1b33; --muted: #5d6b86;
-  --line: rgba(160,120,40,.35); --gold: #b8862b; --gold2: #946a1c; --goldtxt: #ffffff;
-  --track: #e3d9bf; --red: #d91f36; --green: #2f8f58; --bar: rgba(247,242,230,.94);
-  --shadow: 0 8px 24px rgba(40,30,10,.10); --glow: none;
+  --bg: #f6f1e6; --panel: #ffffff; --panel2: #f3ecda; --ink: #0f1b33; --muted: #5a6b86;
+  --line: rgba(160,120,40,.28); --gold: #b8862b; --gold2: #946a1c; --goldtxt: #fff;
+  --shadow: 0 8px 28px rgba(40,30,10,.1);
 }
-* { box-sizing: border-box; }
-html { min-height: 100%; background: var(--bg); }
+* { box-sizing: border-box; margin: 0; }
+html { background: var(--bg); }
 body {
-  margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
+  min-height: 100vh; background: var(--bg); color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
-  padding: calc(14px + env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom));
-  -webkit-font-smoothing: antialiased;
+  padding: calc(12px + var(--safe-t)) 16px calc(28px + var(--safe-b));
+  -webkit-font-smoothing: antialiased; line-height: 1.45;
 }
-button, input { font: inherit; }
-button { border: 0; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-button:disabled { opacity: .4; cursor: not-allowed; }
-.app { max-width: 680px; margin: 0 auto; }
+button, input { font: inherit; border: 0; }
+button { cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+button:disabled { opacity: .45; cursor: not-allowed; }
 .hidden { display: none !important; }
-.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.between { justify-content: space-between; }
-
-/* Header */
-.top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-.logo { width: 50px; height: 50px; border-radius: 14px; flex-shrink: 0; box-shadow: 0 0 0 1px var(--line), var(--glow); }
-.brand-wrap { flex: 1; min-width: 0; }
-.brand { font-size: 21px; font-weight: 900; letter-spacing: -.5px; line-height: 1.1; }
-.brand b { color: var(--gold); font-weight: 900; }
-.tools { display: grid; grid-template-columns: repeat(2, 42px); gap: 6px; flex-shrink: 0; }
-.lang { font-size: 13px; font-weight: 900; letter-spacing: .3px; color: var(--muted); }
-.lang.on { background: linear-gradient(145deg, var(--gold), var(--gold2)); color: var(--goldtxt); border-color: transparent; }
+.app { max-width: 520px; margin: 0 auto; }
+.top { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.logo { width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0; }
+.brand { flex: 1; min-width: 0; }
+.brand strong { display: block; font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
+.brand span { font-size: 11px; color: var(--muted); }
+.tools { display: flex; gap: 6px; }
 .tool {
-  width: 42px; height: 42px; border-radius: 13px; background: var(--panel); border: 1.5px solid var(--line);
-  color: var(--ink); font-size: 19px; line-height: 1; display: grid; place-items: center;
-  box-shadow: var(--glow); transition: transform .15s, border-color .2s;
+  width: 40px; height: 40px; border-radius: 12px; background: var(--panel);
+  border: 1px solid var(--line); color: var(--ink); display: grid; place-items: center;
+  font-size: 13px; font-weight: 800;
 }
-.tool:active { transform: scale(.92); border-color: var(--gold); }
-#resetBtn { color: var(--gold); font-size: 22px; font-weight: 800; }
-
-/* Progress */
-.progress { height: 12px; border-radius: 999px; background: var(--track); overflow: hidden; }
-.progress > i {
-  display: block; height: 100%; width: 25%; border-radius: 999px;
-  background: linear-gradient(90deg, var(--gold2), var(--gold), #ecd9a0); transition: width .35s ease;
+.tool.on { background: linear-gradient(145deg, var(--gold), var(--gold2)); color: var(--goldtxt); border-color: transparent; }
+.trust { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.trust span {
+  font-size: 12px; font-weight: 650; padding: 6px 11px; border-radius: 999px;
+  background: color-mix(in srgb, var(--gold) 12%, var(--panel)); border: 1px solid var(--line); color: var(--gold);
 }
-.steplabel { font-size: 20px; font-weight: 800; letter-spacing: -.3px; margin: 14px 0 4px; }
-.privacy { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
-
-/* Panels */
-.panel {
-  background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius);
-  padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px;
+.hero { text-align: center; padding: 8px 4px 22px; }
+.hero h1 { font-size: 28px; font-weight: 800; letter-spacing: -.7px; line-height: 1.15; margin-bottom: 10px; }
+.hero p { color: var(--muted); font-size: 15px; max-width: 340px; margin: 0 auto 18px; }
+.cases { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
+.case {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px 14px;
+  text-align: left; color: var(--ink); box-shadow: var(--shadow); transition: transform .15s;
 }
-.pills { display: flex; flex-wrap: nowrap; gap: 6px; margin-bottom: 18px; }
-.pill {
-  display: flex; align-items: center; justify-content: center; flex: 1 1 auto; white-space: nowrap; gap: 4px; padding: 8px 6px; border-radius: 999px;
-  border: 1.5px solid var(--line); background: var(--panel2); color: var(--muted);
-  font-size: 12.5px; font-weight: 800;
-}
-.pill.done { color: var(--ink); border-color: var(--gold); }
-.pill.on { background: linear-gradient(145deg, var(--gold), var(--gold2)); border-color: transparent; color: var(--goldtxt); }
-.badge {
-  width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center;
-  background: linear-gradient(145deg, var(--gold), var(--gold2)); color: var(--goldtxt);
-  font-size: 22px; font-weight: 900; margin-bottom: 12px;
-}
-h1 { font-size: 32px; letter-spacing: -1px; line-height: 1.08; margin: 0 0 10px; font-weight: 900; color: var(--gold); }
-h2 { font-size: 20px; margin: 0 0 12px; font-weight: 800; letter-spacing: -.3px; }
-.muted { color: var(--muted); line-height: 1.55; font-size: 15px; }
-.coach {
-  display: flex; gap: 10px; align-items: center; padding: 12px 14px; border-radius: 14px; margin: 14px 0 4px;
-  background: color-mix(in srgb, var(--gold) 12%, var(--panel)); border: 1px solid var(--line);
-  font-size: 14px; font-weight: 700; line-height: 1.35;
-}
-.coach span:first-child { font-size: 22px; }
-
-/* Mode cards */
-.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; padding-bottom: 22px; }
-.mode {
-  position: relative; min-height: 142px; text-align: left; padding: 16px; border-radius: 18px;
-  background: linear-gradient(145deg, var(--gold), var(--gold2)); color: var(--goldtxt);
-  display: flex; flex-direction: column; justify-content: space-between; transition: transform .15s;
-  box-shadow: 0 8px 22px color-mix(in srgb, var(--gold) 28%, transparent);
-}
-.mode:active { transform: scale(.97); }
-.mode.secondary { background: var(--panel2); color: var(--ink); border: 1.5px solid var(--line); box-shadow: none; }
-.mode .emoji { font-size: 30px; line-height: 1; }
-.mode > div { flex: 1; text-align: left; }
-.mode strong { display: block; font-size: 16px; font-weight: 800; margin-bottom: 3px; }
-.mode small { display: block; font-size: 12px; line-height: 1.35; opacity: .85; }
-
-.mode.wide { grid-column: 1 / -1; min-height: 96px; flex-direction: row; align-items: center; gap: 14px; }
-.steps-list { margin: 8px 0 12px; padding-left: 22px; line-height: 1.6; font-size: 14px; }
-.steps-list li { margin-bottom: 4px; }
-.steps-list b { color: var(--gold); }
-.guide-card { padding: 14px; border-radius: 16px; background: color-mix(in srgb, var(--gold) 9%, var(--panel)); border: 1px solid var(--line); margin: 12px 0; }
-.guide-card h3 { margin: 0 0 6px; font-size: 16px; }
-
-/* Pointing finger */
-.finger {
-  display: block; text-align: center; font-size: 38px; line-height: 1; pointer-events: none;
-  animation: bob 1s ease-in-out infinite; filter: drop-shadow(0 4px 6px rgba(0,0,0,.4));
-}
-.mode .finger { position: absolute; right: 12px; bottom: -26px; z-index: 2; }
-.fingerwrap { margin-top: 6px; }
-@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
-@media (prefers-reduced-motion: reduce) { .finger { animation: none; } }
-
-.back { background: transparent; color: var(--gold); padding: 4px 0 10px; font-weight: 800; font-size: 16px; }
-.status { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); margin: 8px 0 6px; }
-.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); }
-.dot.live { background: var(--red); box-shadow: 0 0 0 6px color-mix(in srgb, var(--red) 20%, transparent); animation: pulse 1.4s infinite; }
-@keyframes pulse { 50% { box-shadow: 0 0 0 11px color-mix(in srgb, var(--red) 5%, transparent); } }
-.timer { font-size: 54px; font-weight: 900; letter-spacing: 1px; text-align: center; font-variant-numeric: tabular-nums; margin: 10px 0; color: var(--ink); }
-.visual { height: 64px; width: 100%; background: var(--panel2); border: 1px solid var(--line); border-radius: 14px; margin: 10px 0 18px; }
-.controls { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.case:active { transform: scale(.97); }
+.case .emoji { font-size: 24px; margin-bottom: 8px; display: block; }
+.case strong { display: block; font-size: 14px; font-weight: 750; margin-bottom: 2px; }
+.case small { font-size: 11px; color: var(--muted); line-height: 1.3; }
+.actions { display: grid; gap: 10px; margin-bottom: 18px; }
 .btn {
-  padding: 13px 20px; border-radius: 999px; background: linear-gradient(145deg, var(--gold), var(--gold2));
-  color: var(--goldtxt); font-weight: 800; min-height: 50px; transition: transform .12s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 54px; padding: 14px 18px; border-radius: 16px; font-weight: 750; font-size: 16px;
+  transition: transform .12s;
 }
 .btn:active { transform: scale(.97); }
-.btn.light { background: var(--panel2); border: 1.5px solid var(--line); color: var(--ink); }
-.btn.danger { background: var(--red); color: #fff; }
-.btn.green { background: var(--green); color: #fff; }
-.btn.green { background: var(--green); color: #fff; }
-.btn.import-btn {
-  background: linear-gradient(145deg, #2563eb, #1d4ed8);
-  color: #fff;
-  border: none;
-  box-shadow: 0 6px 18px rgba(37,99,235,.35);
+.btn-gold { background: linear-gradient(145deg, var(--gold), var(--gold2)); color: var(--goldtxt); box-shadow: 0 8px 24px rgba(212,176,98,.28); }
+.btn-blue { background: linear-gradient(145deg, #3b82f6, #1d4ed8); color: #fff; box-shadow: 0 8px 22px rgba(37,99,235,.3); }
+.btn-ghost { background: var(--panel); border: 1px solid var(--line); color: var(--ink); }
+.btn-danger { background: var(--red); color: #fff; }
+.btn-green { background: var(--green); color: #fff; }
+.btn-sm { min-height: 42px; padding: 10px 14px; font-size: 13px; border-radius: 12px; }
+.panel {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 18px; box-shadow: var(--shadow); margin-bottom: 14px;
 }
-.btn.import-btn:active { transform: scale(.97); }
-.smallbtn.import-btn {
-  background: color-mix(in srgb, #2563eb 18%, var(--panel));
-  border-color: #3b82f6;
-  color: #93c5fd;
-}
-
+.panel h2 { font-size: 18px; font-weight: 750; margin-bottom: 6px; }
+.muted { color: var(--muted); font-size: 14px; line-height: 1.5; }
+.back { background: transparent; color: var(--gold); font-weight: 700; font-size: 15px; padding: 4px 0 12px; }
+.status { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin: 8px 0 12px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: #64748b; }
+.dot.live { background: var(--red); box-shadow: 0 0 0 6px rgba(225,29,72,.2); animation: pulse 1.4s infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 12px rgba(225,29,72,.05); } }
+.timer { font-size: 48px; font-weight: 700; letter-spacing: 1px; text-align: center; font-variant-numeric: tabular-nums; margin: 12px 0 16px; }
+.visual { height: 72px; width: 100%; background: color-mix(in srgb, var(--gold) 8%, var(--panel)); border-radius: 14px; margin-bottom: 18px; display: block; }
 .rec {
-  width: 90px; height: 90px; border-radius: 50%; background: var(--red); color: #fff; font-size: 14px; font-weight: 900;
-  box-shadow: 0 0 0 10px color-mix(in srgb, var(--red) 18%, transparent); transition: transform .12s;
+  width: 88px; height: 88px; border-radius: 50%; background: var(--red); color: #fff;
+  font-size: 14px; font-weight: 800; box-shadow: 0 0 0 12px rgba(225,29,72,.15);
+  margin: 0 auto; display: grid; place-items: center; transition: transform .12s;
 }
 .rec:active { transform: scale(.94); }
+.controls { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.guide { background: var(--panel2); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin: 12px 0; }
+.guide h3 { font-size: 15px; font-weight: 750; margin-bottom: 10px; }
+.guide ol { padding-left: 18px; margin: 0 0 14px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.guide li { margin-bottom: 6px; }
+.guide li b { color: var(--ink); }
 .notice {
-  padding: 12px 14px; border-radius: 14px; background: color-mix(in srgb, var(--gold) 10%, var(--panel));
-  border: 1px solid var(--line); font-size: 13px; line-height: 1.5; margin: 10px 0;
+  padding: 12px 14px; border-radius: 14px;
+  background: color-mix(in srgb, #eab308 10%, var(--panel));
+  border: 1px solid color-mix(in srgb, #ca8a04 30%, transparent);
+  font-size: 13px; line-height: 1.5; margin: 10px 0;
 }
-audio, video { width: 100%; margin: 10px 0; border-radius: 12px; background: #000; max-height: 260px; }
+.lib-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.search {
+  width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--ink); margin-bottom: 12px;
+}
+.storage { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.lib-item { padding: 14px 0; border-top: 1px solid var(--line); }
+.lib-item:first-child { border-top: 0; }
+.lib-title { font-weight: 700; font-size: 15px; overflow-wrap: anywhere; }
+.lib-meta { font-size: 12px; color: var(--muted); margin: 4px 0 10px; }
+.lib-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  padding: 8px 12px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line);
+  color: var(--ink); font-size: 12px; font-weight: 650;
+}
 .field {
-  width: 100%; padding: 14px; border: 1.5px solid var(--line); border-radius: 14px;
-  background: var(--panel2); color: var(--ink); margin: 8px 0 14px;
+  width: 100%; padding: 13px 14px; border: 1px solid var(--line); border-radius: 12px;
+  background: var(--bg); color: var(--ink); margin: 8px 0 12px;
 }
-.field:focus { outline: 2px solid color-mix(in srgb, var(--gold) 60%, transparent); outline-offset: 1px; }
-.library-item { padding: 14px 0; border-top: 1px solid var(--line); }
-.library-item:first-child { border-top: 0; }
-.item-title { font-weight: 800; overflow-wrap: anywhere; }
-.meta { font-size: 12px; color: var(--muted); margin: 4px 0 10px; }
-.smallbtn {
-  padding: 9px 13px; border-radius: 999px; background: var(--panel2); border: 1.5px solid var(--line);
-  color: var(--ink); font-size: 12px; font-weight: 700;
-}
-.smallbtn:active { border-color: var(--gold); }
-footer { text-align: center; color: var(--muted); font-size: 11px; line-height: 1.6; padding: 10px 8px 4px; }
-footer .copy { font-weight: 800; margin-bottom: 2px; }
-
-/* Sticky action bar */
-.bar {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; gap: 12px; justify-content: center;
-  padding: 12px 16px calc(14px + env(safe-area-inset-bottom)); background: var(--bar);
-  border-top: 1.5px solid var(--line); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-}
-.bar > * { max-width: 330px; }
-.bar .btn { min-height: 54px; font-size: 17px; }
-#barBack { flex: 0 0 auto; padding-inline: 22px; }
-#barMain { flex: 1; }
-@media (max-width: 390px) {
-  .choices { grid-template-columns: 1fr; }
-  .mode { min-height: 112px; flex-direction: row; align-items: center; gap: 14px; }
-  .mode .finger { bottom: -24px; }
-  .timer { font-size: 46px; }
-  h1 { font-size: 29px; }
-}
+footer { text-align: center; color: var(--muted); font-size: 11px; line-height: 1.55; padding: 20px 8px 8px; }
+audio, video { width: 100%; margin: 10px 0; border-radius: 12px; background: #000; max-height: 240px; }
+@media (max-width: 380px) { .hero h1 { font-size: 24px; } .timer { font-size: 40px; } }
 </style>
 </head>
 <body>
 <main class="app">
   <header class="top">
-    <img class="logo" src="./logo.svg" alt="RecVoiceNow">
-    <div class="brand-wrap"><div class="brand">RecVoice<b>Now</b></div></div>
+    <img class="logo" src="./logo.svg" alt="">
+    <div class="brand"><strong>RecVoiceNow</strong><span data-i18n="tagline">Private · On this device</span></div>
     <div class="tools">
-      <button type="button" class="tool lang on" id="langEn" aria-label="English" title="English">EN</button>
-      <button type="button" class="tool lang" id="langJa" aria-label="日本語" title="日本語">JP</button>
-      <button type="button" class="tool" id="resetBtn" aria-label="Reset" title="Reset">↺</button>
-      <button type="button" class="tool" id="themeToggle" aria-label="Toggle dark / light mode" title="Toggle theme">☀️</button>
+      <button type="button" class="tool lang on" id="langEn" title="English">EN</button>
+      <button type="button" class="tool lang" id="langJa" title="日本語">JP</button>
+      <button type="button" class="tool" id="themeToggle" aria-label="Theme">◐</button>
     </div>
   </header>
 
-  <div class="progress" role="progressbar" aria-valuemin="1" aria-valuemax="4" id="progressWrap"><i id="progressFill"></i></div>
-  <div class="steplabel" id="stepLabel">Step 1 of 4 · Choose</div>
-  <div class="privacy" data-i18n="privacy">🔒 Private · stored on this device only</div>
-
-  <nav class="pills panel" id="steps" aria-label="Steps" style="margin-bottom:16px;padding:14px">
-    <span class="pill on" id="stepPick">1 <span data-i18n="p_choose">Choose</span></span>
-    <span class="pill" id="stepRec">2 <span data-i18n="p_record">Record</span></span>
-    <span class="pill" id="stepSave">3 <span data-i18n="p_save">Save</span></span>
-    <span class="pill" id="stepLib">4 <span data-i18n="p_library">Library</span></span>
-  </nav>
-
-  <section id="home" class="panel">
-    <div class="badge">1</div>
-    <h1 data-i18n="home_h1">Capture what matters.</h1>
-    <p class="muted" data-i18n="home_desc">Record a voice memo or try screen capture where your browser supports it. Everything stays in this browser on this device — no account, no upload.</p>
-    <div class="choices">
-      <button type="button" class="mode" id="voiceMode">
-        <span class="emoji">🎙️</span>
-        <div><strong data-i18n="title_voice">Voice Recording</strong><small data-i18n="sub_voice">Use your microphone</small></div>
-        <span class="finger" id="fingerHome" aria-hidden="true">👆</span>
-      </button>
-      <button type="button" class="mode secondary" id="screenMode">
-        <span class="emoji">📱</span>
-        <div><strong data-i18n="title_screen">Screen Recording</strong><small data-i18n="sub_screen">Screen + audio where supported</small></div>
-      </button>
-      <button type="button" class="mode secondary wide" id="ambientMode">
-        <span class="emoji">🔊</span>
-        <div><strong data-i18n="title_ambient">Room &amp; Speaker Sound</strong><small data-i18n="sub_ambient">Raw microphone, no filtering. Captures sound around the phone or from nearby speakers.</small></div>
-      </button>
+  <section id="home">
+    <div class="trust">
+      <span data-i18n="b_private">✅ 100% Private</span>
+      <span data-i18n="b_account">✅ No Account</span>
+      <span data-i18n="b_free">✅ Free</span>
+      <span data-i18n="b_device">✅ Saved On This Device</span>
+    </div>
+    <div class="hero">
+      <h1 data-i18n="hero_title">Save Any Sound<br>In Seconds</h1>
+      <p data-i18n="hero_sub">Record voice notes, music practice, meetings, lectures, speaker audio and more.</p>
+    </div>
+    <div class="cases">
+      <button type="button" class="case" data-mode="voice"><span class="emoji">🎤</span><strong data-i18n="c_voice">Voice Notes</strong><small data-i18n="c_voice_s">Quick memos & ideas</small></button>
+      <button type="button" class="case" data-mode="ambient"><span class="emoji">🎵</span><strong data-i18n="c_song">Song Practice</strong><small data-i18n="c_song_s">Capture speaker audio</small></button>
+      <button type="button" class="case" data-mode="voice"><span class="emoji">🎧</span><strong data-i18n="c_ideas">Audio Ideas</strong><small data-i18n="c_ideas_s">Capture inspiration</small></button>
+      <button type="button" class="case" data-mode="ambient"><span class="emoji">📚</span><strong data-i18n="c_lectures">Lectures</strong><small data-i18n="c_lectures_s">Room & speaker sound</small></button>
+      <button type="button" class="case" data-mode="voice"><span class="emoji">💼</span><strong data-i18n="c_meetings">Meetings</strong><small data-i18n="c_meetings_s">Voice notes on the go</small></button>
+      <button type="button" class="case" data-mode="other"><span class="emoji">🔊</span><strong data-i18n="c_speaker">Other Apps</strong><small data-i18n="c_speaker_s">Import from Photos</small></button>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn btn-gold" id="startVoice" data-i18n="cta_voice">🎙️ Record Voice</button>
+      <button type="button" class="btn btn-blue" id="startOther" data-i18n="cta_other">📱 Record From Other Apps</button>
+      <button type="button" class="btn btn-ghost" id="goLibrary" data-i18n="cta_library">📂 My Recordings</button>
     </div>
   </section>
 
   <section id="recorder" class="panel hidden">
     <button type="button" class="back" id="backHome" data-i18n="back">‹ Back</button>
-    <div class="badge" id="recBadge">2</div>
     <h2 id="modeTitle">Voice Recording</h2>
-    <p class="muted" id="modeDescription">Microphone recording</p>
-    <div id="screenNotice" class="notice hidden">
-      <span data-i18n-html="screen_notice"></span>
-      <div class="controls" style="margin-top:10px"><button type="button" class="smallbtn" id="altMethod" data-i18n="alt_method">Other method: Control Center ›</button></div>
-    </div>
-    <div id="ambientNotice" class="notice hidden" data-i18n-html="ambient_notice"></div>
-    <div id="screenGuide" class="guide-card hidden">
-      <h3 data-i18n="guide_title">📱 Record the whole phone (any app, with sound)</h3>
-      <p class="muted" style="margin:0 0 6px" data-i18n="guide_intro"></p>
-      <ol class="steps-list">
-        <li data-i18n-html="guide_1"></li>
-        <li data-i18n-html="guide_2"></li>
-        <li data-i18n-html="guide_3"></li>
-        <li data-i18n-html="guide_4"></li>
-        <li data-i18n-html="guide_5"></li>
-        <li data-i18n-html="guide_6"></li>
+    <p class="muted" id="modeDesc">Microphone recording</p>
+    <div id="otherGuide" class="guide hidden">
+      <h3 data-i18n="guide_title">📱 Record sound from other apps</h3>
+      <p class="muted" style="margin-bottom:10px" data-i18n="guide_why">Apple does not allow websites to directly record audio from other apps. Use the iPhone Screen Recording tool, then import here.</p>
+      <ol>
+        <li data-i18n-html="g1">Open <b>Control Center</b> (swipe down from top-right)</li>
+        <li data-i18n-html="g2"><b>Press & hold</b> the Screen Record button</li>
+        <li data-i18n-html="g3">Tap the <b>Microphone</b> so it turns red</li>
+        <li data-i18n-html="g4">Tap <b>Start Recording</b>, then open any app</li>
+        <li data-i18n-html="g5">Stop from the red status bar → video saves to <b>Photos</b></li>
+        <li data-i18n-html="g6">Come back here and tap <b>Import</b></li>
       </ol>
-      <div class="controls"><button type="button" class="btn import-btn" id="importBtn" data-i18n="main_import">📥 Import video</button></div>
+      <button type="button" class="btn btn-blue" id="importBtn" data-i18n="btn_import">📥 Import from Photos</button>
     </div>
-    <div class="status"><span id="statusDot" class="dot"></span><span id="statusText">Ready to record</span></div>
-    <div class="timer" id="timer">00:00</div>
-    <canvas id="wave" class="visual" width="600" height="90" aria-label="Audio level visualization"></canvas>
-    <video id="livePreview" class="hidden" autoplay muted playsinline></video>
-    <div class="coach" id="coach"><span>👉</span><span id="coachText">Tap the red REC button to start.</span></div>
-    <div class="controls" id="idleControls" style="margin-top:14px">
-      <div class="fingerwrap" style="text-align:center">
-        <button type="button" class="rec" id="startBtn">● REC</button>
-        <span class="finger" id="fingerRec" aria-hidden="true">👆</span>
-      </div>
-    </div>
-    <div class="controls hidden" id="activeControls" style="margin-top:14px">
-      <button type="button" class="btn light" id="pauseBtn" data-i18n="btn_pause">Pause</button>
-      <div class="fingerwrap" style="text-align:center">
-        <button type="button" class="btn danger" id="stopBtn" data-i18n="btn_stop">Stop</button>
-        <span class="finger" id="fingerStop" aria-hidden="true">👆</span>
+    <div id="ambientNote" class="notice hidden" data-i18n-html="ambient_note"></div>
+    <div id="recUI">
+      <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">Ready</span></div>
+      <div class="timer" id="timer">00:00</div>
+      <canvas id="wave" class="visual" width="600" height="100" aria-label="Audio level"></canvas>
+      <div class="controls" id="idleControls"><button type="button" class="rec" id="startBtn">● REC</button></div>
+      <div class="controls hidden" id="activeControls">
+        <button type="button" class="btn btn-ghost btn-sm" id="pauseBtn" data-i18n="btn_pause">Pause</button>
+        <button type="button" class="btn btn-danger btn-sm" id="stopBtn" data-i18n="btn_stop">Stop</button>
       </div>
     </div>
     <div id="previewArea" class="hidden">
-      <h2 style="margin-top:18px" data-i18n="preview_h">Recording preview</h2>
+      <h2 style="margin-top:8px" data-i18n="preview">Preview</h2>
       <audio id="audioPreview" controls class="hidden"></audio>
       <video id="videoPreview" controls playsinline class="hidden"></video>
-      <label class="muted" for="recordName" data-i18n="rec_name">Recording name</label>
-      <input id="recordName" class="field" maxlength="80" value="My recording">
+      <label class="muted" for="recordName" data-i18n="rec_name">Name</label>
+      <input id="recordName" class="field" maxlength="80" value="Recording">
       <div class="controls">
-        <div class="fingerwrap" style="text-align:center">
-          <button type="button" class="btn green" id="saveBtn" data-i18n="btn_save">Save to Library</button>
-          <span class="finger" id="fingerSave" aria-hidden="true">👆</span>
-        </div>
-        <button type="button" class="btn light" id="downloadBtn" data-i18n="btn_download">Download</button>
-        <button type="button" class="btn light" id="shareBtn" data-i18n="btn_share">Share</button>
-        <button type="button" class="btn light" id="transcribeBtn" data-i18n="btn_transcribe">Transcribe</button>
+        <button type="button" class="btn btn-green" id="saveBtn" data-i18n="btn_save">Save</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="downloadBtn" data-i18n="btn_download">Download</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="shareBtn" data-i18n="btn_share">Share</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="transcribeBtn" data-i18n="btn_transcribe">Transcribe</button>
       </div>
       <div id="transcriptBox" class="notice hidden" style="margin-top:12px;white-space:pre-wrap"></div>
     </div>
-    <p class="muted" id="supportMessage" role="status"></p>
+    <p class="muted" id="msg" role="status" style="margin-top:12px"></p>
   </section>
 
-  <section class="panel" id="libraryPanel">
-    <div class="row between">
+  <section id="library" class="panel hidden">
+    <button type="button" class="back" id="backFromLib" data-i18n="back">‹ Back</button>
+    <div class="lib-head">
       <h2 data-i18n="lib_title">My Recordings</h2>
-      <span class="row"><button type="button" class="smallbtn import-btn" id="importLib" data-i18n="btn_import">Import</button><button type="button" class="smallbtn" id="refreshLibrary" data-i18n="btn_refresh">Refresh</button></span>
-      <input type="file" id="importFile" accept="video/*,audio/*" multiple class="hidden">
+      <button type="button" class="btn btn-blue btn-sm" id="importLib" data-i18n="btn_import">Import</button>
     </div>
-    <div id="library">
-      <p class="muted" data-i18n="lib_empty">No recordings yet. Your saved recordings will appear here.</p>
-    </div>
+    <input type="search" class="search" id="searchLib" placeholder="Search recordings…">
+    <div class="storage" id="storageInfo"></div>
+    <div id="libList"><p class="muted" data-i18n="lib_empty">No recordings yet.</p></div>
   </section>
 
+  <input type="file" id="importFile" accept="video/*,audio/*" multiple class="hidden">
   <footer>
-    <div class="copy">© 2026 Rafat Kotaki. All rights reserved.</div>
-    <div>RecVoiceNow · V1.6.0</div>
+    <div>© 2026 Rafat Kotaki. All rights reserved.</div>
+    <div>RecVoiceNow · V2.0.0</div>
   </footer>
 </main>
-
-<div class="bar" id="actionBar">
-  <button type="button" class="btn light" id="barBack" data-i18n="back">‹ Back</button>
-  <button type="button" class="btn" id="barMain">🎙️ Voice</button>
-</div>
-
 <script>
-/* RecVoiceNow V1.6.0 — browser-only recorder. Data stays in IndexedDB on this device. */
 (() => {
-  'use strict';
-  const $ = id => document.getElementById(id);
-  const DB = 'RecordVoiceNowDB', STORE = 'recordings';
-  const THEME_KEY = 'rvn-theme';
+'use strict';
+const $ = id => document.getElementById(id);
+const DB = 'RecordVoiceNowDB', STORE = 'recordings';
+const THEME_KEY = 'rvn-theme', LANG_KEY = 'rvn-lang';
+let db, mode = 'voice', stream = null, recorder = null, chunks = [], blob = null;
+let startedAt = 0, elapsed = 0, tick = null, paused = false;
+let audioCtx, analyser, raf, currentMime = 'audio/webm', lang = 'en';
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-  let db, mode = 'voice', stream = null, recorder = null, chunks = [], blob = null;
-  let startedAt = 0, elapsed = 0, tick = null, paused = false;
-  let audioCtx, analyser, raf, currentMime = 'audio/webm';
-  let wakeLock = null, interrupted = false, peak = 0, silenceTimer = null;
-  const isAudio = () => mode !== 'screen';
-  // Detect iPhone / iPad more reliably for Screen Recording UX
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const I18N = {
+  en: {
+    tagline: 'Private · On this device',
+    b_private: '✅ 100% Private', b_account: '✅ No Account', b_free: '✅ Free', b_device: '✅ Saved On This Device',
+    hero_title: 'Save Any Sound\nIn Seconds',
+    hero_sub: 'Record voice notes, music practice, meetings, lectures, speaker audio and more.',
+    c_voice: 'Voice Notes', c_voice_s: 'Quick memos & ideas',
+    c_song: 'Song Practice', c_song_s: 'Capture speaker audio',
+    c_ideas: 'Audio Ideas', c_ideas_s: 'Capture inspiration',
+    c_lectures: 'Lectures', c_lectures_s: 'Room & speaker sound',
+    c_meetings: 'Meetings', c_meetings_s: 'Voice notes on the go',
+    c_speaker: 'Other Apps', c_speaker_s: 'Import from Photos',
+    cta_voice: '🎙️ Record Voice', cta_other: '📱 Record From Other Apps', cta_library: '📂 My Recordings',
+    back: '‹ Back',
+    title_voice: 'Voice Recording', title_ambient: 'Room & Speaker Sound', title_other: 'Record From Other Apps',
+    desc_voice: 'Use your microphone. Perfect for notes, ideas and meetings.',
+    desc_ambient: 'Raw mic — best for capturing sound from speakers or the room.',
+    desc_other: 'Apple blocks websites from recording other apps. Use Control Center, then import.',
+    guide_title: '📱 Record sound from other apps',
+    guide_why: 'Apple does not allow websites to directly record audio from other apps. Use the iPhone Screen Recording tool, then import here.',
+    g1: 'Open <b>Control Center</b> (swipe down from top-right)',
+    g2: '<b>Press & hold</b> the Screen Record button',
+    g3: 'Tap the <b>Microphone</b> so it turns red',
+    g4: 'Tap <b>Start Recording</b>, then open any app',
+    g5: 'Stop from the red status bar → video saves to <b>Photos</b>',
+    g6: 'Come back here and tap <b>Import</b>',
+    ambient_note: '<b>Keep this screen open.</b> iPhone pauses web apps when you switch apps. Place the phone near the sound source.<br><br><b>Note:</b> Music from other apps may be paused or lowered while recording.',
+    btn_import: '📥 Import from Photos', btn_pause: 'Pause', btn_resume: 'Resume', btn_stop: 'Stop',
+    preview: 'Preview', rec_name: 'Name', btn_save: 'Save', btn_download: 'Download', btn_share: 'Share',
+    btn_transcribe: 'Transcribe', lib_title: 'My Recordings', lib_empty: 'No recordings yet.',
+    s_ready: 'Ready to record', s_rec: 'Recording…', s_paused: 'Paused', s_done: 'Ready to save',
+    m_saved: 'Saved on this device.', m_perm: 'Please allow microphone access.',
+    m_nosupport: 'Microphone not available. Open this page over HTTPS in Safari.',
+    m_imported: 'Imported {n} item(s).', m_import_none: 'No media selected.',
+    m_transcribe_start: 'Listening…', m_transcribe_done: 'Done.',
+    m_transcribe_no: 'Transcription not supported in this browser.',
+    storage: 'About {n} of storage used',
+    a_play: 'Play', a_dl: 'Download', a_share: 'Share', a_ren: 'Rename', a_del: 'Delete'
+  },
+  ja: {
+    tagline: 'プライベート · この端末のみ',
+    b_private: '✅ 完全プライベート', b_account: '✅ アカウント不要', b_free: '✅ 無料', b_device: '✅ この端末に保存',
+    hero_title: 'どんな音でも\n数秒で保存',
+    hero_sub: 'ボイスメモ、練習、会議、講義、スピーカー音など。',
+    c_voice: 'ボイスメモ', c_voice_s: '素早いメモやアイデア',
+    c_song: '曲の練習', c_song_s: 'スピーカー音を録音',
+    c_ideas: 'オーディオアイデア', c_ideas_s: 'ひらめきを逃さない',
+    c_lectures: '講義', c_lectures_s: '部屋やスピーカーの音',
+    c_meetings: '会議', c_meetings_s: '移動中のメモ',
+    c_speaker: '他のアプリ', c_speaker_s: '写真から取り込む',
+    cta_voice: '🎙️ 音声を録音', cta_other: '📱 他のアプリから録音', cta_library: '📂 録音一覧',
+    back: '‹ 戻る',
+    title_voice: '音声録音', title_ambient: '周囲・スピーカー音', title_other: '他のアプリから録音',
+    desc_voice: 'マイクを使います。メモや会議に最適です。',
+    desc_ambient: 'フィルターなしのマイク。スピーカーや部屋の音向け。',
+    desc_other: 'ウェブサイトは他のアプリの音を直接録音できません。コントロールセンターを使い、後で取り込んでください。',
+    guide_title: '📱 他のアプリの音を録音',
+    guide_why: 'Appleはウェブサイトが他のアプリの音声を直接録音することを許可していません。iPhoneの画面収録を使い、ここに取り込んでください。',
+    g1: '<b>コントロールセンター</b>を開く（右上から下にスワイプ）',
+    g2: '画面収録ボタンを<b>長押し</b>',
+    g3: '<b>マイク</b>をタップして赤くする',
+    g4: '<b>収録を開始</b>をタップし、好きなアプリを開く',
+    g5: '赤いステータスバーから停止 → 動画は<b>写真</b>に保存',
+    g6: 'ここに戻って<b>取り込む</b>をタップ',
+    ambient_note: '<b>この画面を開いたままにしてください。</b>アプリを切り替えるとiPhoneはWebアプリを一時停止します。音源の近くに置いてください。<br><br><b>注意:</b> 録音中、他のアプリの音楽は一時停止したり音量が下がることがあります。',
+    btn_import: '📥 写真から取り込む', btn_pause: '一時停止', btn_resume: '再開', btn_stop: '停止',
+    preview: 'プレビュー', rec_name: '名前', btn_save: '保存', btn_download: 'ダウンロード', btn_share: '共有',
+    btn_transcribe: '文字起こし', lib_title: '録音一覧', lib_empty: '録音はまだありません。',
+    s_ready: '録音準備完了', s_rec: '録音中…', s_paused: '一時停止中', s_done: '保存できます',
+    m_saved: 'この端末に保存しました。', m_perm: 'マイクへのアクセスを許可してください。',
+    m_nosupport: 'マイクを利用できません。HTTPSのSafariで開いてください。',
+    m_imported: '{n}件を取り込みました。', m_import_none: 'ファイルが選択されませんでした。',
+    m_transcribe_start: '聞き取り中…', m_transcribe_done: '完了しました。',
+    m_transcribe_no: 'このブラウザでは文字起こしに対応していません。',
+    storage: '約 {n} 使用中',
+    a_play: '再生', a_dl: 'ダウンロード', a_share: '共有', a_ren: '名前変更', a_del: '削除'
+  }
+};
 
-
-  // ——— Language (EN / JP) ———
-  const LANG_KEY = 'rvn-lang';
-  let lang = 'en', lastStatus = 's_ready', lastLive = false, lastMsg = null;
-  const I18N = {
-    en: {
-      privacy: '🔒 Private · stored on this device only',
-      step_label: 'Step {n} of 4 · {label}',
-      p_choose: 'Choose', p_record: 'Record', p_save: 'Save', p_library: 'Library',
-      home_h1: 'Capture what matters.',
-      home_desc: 'Record a voice memo or try screen capture where your browser supports it. Everything stays in this browser on this device — no account, no upload.',
-      title_voice: 'Voice Recording', title_screen: 'Screen Recording', title_ambient: 'Room & Speaker Sound',
-      sub_voice: 'Use your microphone', sub_screen: 'Screen + audio where supported',
-      sub_ambient: 'Raw microphone, no filtering. Captures sound around the phone or from nearby speakers.',
-      desc_voice: 'Capture audio from your iPhone microphone.',
-      desc_ambient: 'Raw microphone with no filtering, to capture sound around the phone or from speakers.',
-      desc_screen: 'Capture a browser-supported screen stream.',
-      desc_noscreen: 'Your iPhone browser cannot record other apps. Use the built-in recorder instead.',
-      back: '‹ Back',
-      screen_notice: '<b>On the iPhone prompt, tap “Share Entire Screen”</b> to record beyond Safari (the default “Safari” choice records only this app). Sound from other apps is usually not included, and recording may pause when you leave Safari. For reliable full-phone recording with sound, use the other method below.',
-      alt_method: 'Other method: Control Center ›',
-      ambient_notice: '<b>Keep this screen open.</b> iPhone pauses web apps when you switch apps or lock the phone, so recording works only while this app stays on screen. We keep the display awake for you. Place the phone near the sound source for the best result.<br><br><b>Note:</b> On iPhone, playing music or audio from other apps may be paused or lowered while recording. This mode is designed for capturing live voices and environmental sounds.',
-      guide_title: '📱 Record the whole phone (any app, with sound)',
-      guide_intro: "Safari on iPhone cannot capture other apps. Use the iPhone's own recorder, then import the video here:",
-      guide_1: 'Open <b>Settings → Control Center</b> and add <b>Screen Recording</b>.',
-      guide_2: 'Swipe down from the top-right corner to open Control Center.',
-      guide_3: '<b>Press and hold</b> the record button, tap the <b>Microphone</b> icon so it turns red, then tap <b>Start Recording</b>.',
-      guide_4: 'Switch to any app. App sound and your voice are recorded, even in the background.',
-      guide_5: 'Stop from the red status bar. The video is saved in <b>Photos</b>.',
-      guide_6: 'Come back here and tap <b>Import video</b> to keep it in your library.',
-      s_ready: 'Ready to record', s_rec: 'Recording', s_paused: 'Paused',
-      s_finishing: 'Finishing recording…', s_ready_save: 'Recording ready to save',
-      btn_pause: 'Pause', btn_resume: 'Resume', btn_stop: 'Stop', preview_h: 'Recording preview',
-      rec_name: 'Recording name', btn_save: 'Save to Library', btn_download: 'Download', btn_share: 'Share',
-      lib_title: 'My Recordings', btn_import: 'Import', btn_refresh: 'Refresh',
-      lib_empty: 'No recordings yet. Your saved recordings will appear here.',
-      a_play: 'Play', a_download: 'Download', a_share: 'Share', a_rename: 'Rename', a_delete: 'Delete',
-      type_voice: 'voice', type_screen: 'screen',
-      name_voice: 'Voice recording', name_ambient: 'Room sound', name_screen: 'Screen recording',
-      coach_home: 'Tap Voice Recording to begin.',
-      coach_idle: 'Tap the red REC button to start.',
-      coach_rec: 'Recording… tap Stop when you are finished.',
-      coach_preview: 'Name it, then tap Save to Library.',
-      coach_saved: 'Saved! Play, share or download below.',
-      coach_guide: 'Record with Control Center, then import the video here.',
-      main_home: '🎙️ Voice', main_idle: '● Record', main_rec: '■ Stop', main_preview: '💾 Save',
-      main_saved: '↺ New recording', main_import: '📥 Import video',
-      e_denied: 'Permission was denied or capture was cancelled. Allow microphone access in Safari Settings and try again.',
-      e_notfound: 'No suitable microphone or capture source was found.',
-      e_busy: 'The microphone is busy or unavailable. Close other apps using it and try again.',
-      e_unavail: 'This feature is unavailable in this browser.',
-      e_nomic: 'Microphone recording is not supported in this browser. Open this page in Safari over HTTPS.',
-      e_noscreen: 'Screen capture is not available in this browser.',
-      m_share_unsupported: 'Sharing is not supported in this browser. Use Download instead.',
-      m_share_nofile: 'This browser cannot share this recording as a file. Use Download instead.',
-      m_share_fail: 'Share failed: {m}',
-      m_bg: 'The app was in the background. iPhone may have paused or stopped the recording. Check the result and save it.',
-      m_rec_err: 'Recording error: {m}', m_unknown: 'Unknown error',
-      m_captured: 'Recording captured. Save it to keep it in your local library.',
-      m_nodata: 'No recording data was captured.',
-      m_silence: 'No sound is reaching the microphone yet. Check that nothing else is using it (a call or another recorder), that Safari has microphone access (Settings → Safari → Microphone), and hold the phone close to the sound. Note: iPhone may pause or quieten other apps while this page uses the microphone.',
-      m_saved: 'Saved on this device.',
-      m_save_fail: 'Could not save. Device storage may be full or unavailable: {m}',
-      m_fresh_screen: 'Fresh start. Tap REC to choose a screen or tab.',
-      m_fresh: 'Fresh start. Tap REC when ready.',
-      m_tap_screen: 'Tap REC. Your browser may ask you to choose a screen or tab.',
-      m_tap_mic: 'Tap REC and allow microphone access when asked.',
-      m_import_fail: 'Could not import: {m}',
-      m_imported: 'Imported {n} file(s) to your library.',
-      m_import_none: 'No video or audio files were selected.',
-      m_lib_unavail: 'Local library is unavailable: {m}',
-      m_lib_nosupport: 'Your browser does not support local recording storage.',
-      m_lib_load: 'Could not load local recordings: {m}',
-      m_https: 'For microphone access, open this app from its HTTPS address.',
-      c_delete: 'Delete "{name}" from this device?',
-      c_rename: 'New recording name',
-      c_reset: 'Discard this recording and start over from step 1?',
-      play_link: 'Play recording'
-    },
-    ja: {
-      privacy: '🔒 プライベート · この端末内にのみ保存',
-      step_label: 'ステップ {n}/4 · {label}',
-      p_choose: '選択', p_record: '録音', p_save: '保存', p_library: 'ライブラリ',
-      home_h1: '大切な音を、残そう。',
-      home_desc: '音声メモを録音したり、ブラウザが対応していれば画面も録画できます。すべてこの端末のブラウザ内に保存され、アカウント不要・アップロードもありません。',
-      title_voice: '音声録音', title_screen: '画面録画', title_ambient: '周囲・スピーカー音',
-      sub_voice: 'マイクを使用', sub_screen: '対応環境では画面と音声',
-      sub_ambient: 'フィルターなしのマイク。端末の周囲やスピーカーの音を録音します。',
-      desc_voice: 'iPhoneのマイクで音声を録音します。',
-      desc_ambient: 'フィルターなしのマイクで、端末の周囲やスピーカーの音を録音します。',
-      desc_screen: 'ブラウザが対応する画面ストリームを録画します。',
-      desc_noscreen: 'お使いのiPhoneのブラウザでは他のアプリを録画できません。代わりに標準の画面収録を使ってください。',
-      back: '‹ 戻る',
-      screen_notice: '<b>iPhoneの確認画面で「画面全体を共有」をタップ</b>すると、Safari以外も録画できます（初期選択の「Safari」はこのアプリのみ）。他のアプリの音声は通常含まれず、Safariを離れると一時停止する場合があります。音声つきで確実に録画するには、下の別の方法を使ってください。',
-      alt_method: '別の方法: コントロールセンター ›',
-      ambient_notice: '<b>この画面を開いたままにしてください。</b>アプリを切り替えたりロックしたりすると、iPhoneはWebアプリを一時停止します。録音中は画面が消えないようにしています。音源の近くに端末を置くと、きれいに録音できます。<br><br><b>注意:</b> iPhoneでは、録音中に他のアプリの音楽や音声が一時停止したり音量が下がったりすることがあります。このモードは、生の声や周囲の環境音を録るためのものです。',
-      guide_title: '📱 スマホ全体を録画（どのアプリでも音声つき）',
-      guide_intro: 'iPhoneのSafariでは他のアプリを録画できません。iPhone標準の画面収録を使い、できた動画をここに取り込んでください。',
-      guide_1: '<b>設定 → コントロールセンター</b>を開き、<b>画面収録</b>を追加します。',
-      guide_2: '画面の右上から下にスワイプして、コントロールセンターを開きます。',
-      guide_3: '録画ボタンを<b>長押し</b>し、<b>マイク</b>アイコンを赤にしてから<b>収録を開始</b>をタップします。',
-      guide_4: '好きなアプリに切り替えます。アプリの音声とあなたの声が、バックグラウンドでも録音されます。',
-      guide_5: '赤いステータスバーから停止します。動画は<b>写真</b>に保存されます。',
-      guide_6: 'ここに戻って<b>動画を取り込む</b>をタップすると、ライブラリに保存されます。',
-      s_ready: '録音準備完了', s_rec: '録音中', s_paused: '一時停止中',
-      s_finishing: '録音を終了しています…', s_ready_save: '保存できます',
-      btn_pause: '一時停止', btn_resume: '再開', btn_stop: '停止', preview_h: '録音プレビュー',
-      rec_name: '録音名', btn_save: 'ライブラリに保存', btn_download: 'ダウンロード', btn_share: '共有',
-      lib_title: '録音一覧', btn_import: '取り込み', btn_refresh: '更新',
-      lib_empty: '録音はまだありません。保存した録音がここに表示されます。',
-      a_play: '再生', a_download: 'ダウンロード', a_share: '共有', a_rename: '名前変更', a_delete: '削除',
-      type_voice: '音声', type_screen: '画面',
-      name_voice: '音声録音', name_ambient: '周囲の音', name_screen: '画面録画',
-      coach_home: '「音声録音」をタップして開始します。',
-      coach_idle: '赤いRECボタンをタップして開始します。',
-      coach_rec: '録音中… 終わったら「停止」をタップします。',
-      coach_preview: '名前を付けて「ライブラリに保存」をタップします。',
-      coach_saved: '保存しました！下で再生・共有・ダウンロードできます。',
-      coach_guide: 'コントロールセンターで録画し、ここに動画を取り込みます。',
-      main_home: '🎙️ 音声', main_idle: '● 録音', main_rec: '■ 停止', main_preview: '💾 保存',
-      main_saved: '↺ 新規録音', main_import: '📥 動画を取り込む',
-      e_denied: '許可が拒否されたか、キャプチャがキャンセルされました。Safariの設定でマイクへのアクセスを許可して、もう一度お試しください。',
-      e_notfound: '使用できるマイクまたは録画ソースが見つかりません。',
-      e_busy: 'マイクが使用中か利用できません。マイクを使っている他のアプリを閉じて、もう一度お試しください。',
-      e_unavail: 'お使いのブラウザではこの機能を利用できません。',
-      e_nomic: 'このブラウザはマイク録音に対応していません。HTTPSでSafariからこのページを開いてください。',
-      e_noscreen: 'このブラウザでは画面キャプチャを利用できません。',
-      m_share_unsupported: 'このブラウザは共有に対応していません。ダウンロードをご利用ください。',
-      m_share_nofile: 'このブラウザでは、この録音をファイルとして共有できません。ダウンロードをご利用ください。',
-      m_share_fail: '共有に失敗しました: {m}',
-      m_bg: 'アプリがバックグラウンドにありました。iPhoneが録音を一時停止または停止した可能性があります。結果を確認して保存してください。',
-      m_rec_err: '録音エラー: {m}', m_unknown: '不明なエラー',
-      m_captured: '録音できました。保存すると、この端末のライブラリに残ります。',
-      m_nodata: '録音データを取得できませんでした。',
-      m_silence: 'まだマイクに音が届いていません。通話や他の録音アプリがマイクを使っていないか、Safariのマイク許可（設定 → Safari → マイク）、音源に近づけているかを確認してください。注意: このページがマイクを使っている間、iPhoneは他のアプリを一時停止したり音量を下げたりすることがあります。',
-      m_saved: 'この端末に保存しました。',
-      m_save_fail: '保存できませんでした。端末の空き容量が不足しているか、利用できない可能性があります: {m}',
-      m_fresh_screen: '最初からやり直します。RECをタップして画面またはタブを選んでください。',
-      m_fresh: '最初からやり直します。準備ができたらRECをタップしてください。',
-      m_tap_screen: 'RECをタップします。ブラウザが画面またはタブの選択を求める場合があります。',
-      m_tap_mic: 'RECをタップし、求められたらマイクへのアクセスを許可してください。',
-      m_import_fail: '取り込めませんでした: {m}',
-      m_imported: '{n}件をライブラリに取り込みました。',
-      m_import_none: '動画または音声ファイルが選択されませんでした。',
-      btn_transcribe: '文字起こし',
-      m_transcribe_start: '聞き取り中… 録音を再生するか、マイクの近くで話してください。',
-      m_transcribe_done: '文字起こしが完了しました。',
-      m_transcribe_unsupported: 'このブラウザではリアルタイム文字起こしに対応していません。後からローカルのWhisperモデルを追加できます。',
-      m_transcribe_error: '文字起こしに失敗しました: {m}',
-      main_import_ios: '📥 写真から取り込む',
-      guide_import_hint: 'コントロールセンターで録画したあと、ここで動画を取り込んでください。',
-      m_lib_unavail: 'ローカルライブラリを利用できません: {m}',
-      m_lib_nosupport: 'お使いのブラウザはローカル保存に対応していません。',
-      m_lib_load: 'ローカルの録音を読み込めませんでした: {m}',
-      m_https: 'マイクを使うには、HTTPSのアドレスからこのアプリを開いてください。',
-      c_delete: '「{name}」をこの端末から削除しますか？',
-      c_rename: '新しい録音名',
-      c_reset: 'この録音を破棄して、ステップ1からやり直しますか？',
-      play_link: '録音を再生'
-    }
-  };
-  function t(k, v) {
-    let str = (I18N[lang] && I18N[lang][k]) || I18N.en[k] || k;
-    if (v) for (const x in v) str = str.replace('{' + x + '}', v[x]);
-    return str;
-  }
-  function getStoredLang() { try { return localStorage.getItem(LANG_KEY); } catch { return null; } }
-  function applyLang(l) {
-    if (l === 'en' || l === 'ja') lang = l;
-    document.documentElement.lang = lang;
-    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
-    document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
-    $('langEn').classList.toggle('on', lang === 'en');
-    $('langJa').classList.toggle('on', lang === 'ja');
-    $('pauseBtn').textContent = t(paused ? 'btn_resume' : 'btn_pause');
-    setStatus(lastStatus, lastLive);
-    if (lastMsg) message(lastMsg[0], lastMsg[1]);
-    modeTexts();
-    updateSteps();
-    renderLibrary();
-  }
-  function setLang(l) {
-    try { localStorage.setItem(LANG_KEY, l); } catch {}
-    applyLang(l);
-  }
-  function modeTexts() {
-    const noScreen = mode === 'screen' && (isIOS || !navigator.mediaDevices?.getDisplayMedia);
-    $('modeTitle').textContent = t('title_' + mode);
-    $('modeDescription').textContent = noScreen ? t('desc_noscreen') : t('desc_' + mode);
-  }
-
-  // ——— Theme (dark + gold by default) ———
-  function getStoredTheme() {
-    try { return localStorage.getItem(THEME_KEY); } catch { return null; }
-  }
-  function applyTheme(theme) {
-    theme = theme === 'light' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', theme);
-    $('themeToggle').textContent = theme === 'dark' ? '☀️' : '🌙';
-    document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.remove());
-    const meta = document.createElement('meta');
-    meta.name = 'theme-color';
-    meta.content = theme === 'dark' ? '#05070c' : '#f7f2e6';
-    document.head.appendChild(meta);
-  }
-  function toggleTheme() {
-    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    try { localStorage.setItem(THEME_KEY, next); } catch {}
-    applyTheme(next);
-  }
-  applyTheme(getStoredTheme());
-  $('themeToggle').addEventListener('click', toggleTheme);
-
-  // ——— Step-by-step guide (progress, coach text, pointing finger, action bar) ———
-  const pillEls = ['stepPick', 'stepRec', 'stepSave', 'stepLib'].map($);
-  const FINGERS = ['fingerHome', 'fingerRec', 'fingerStop', 'fingerSave'];
-  function guideState() {
-    if (!$('home').classList.contains('hidden')) return 'home';
-    if (!$('previewArea').classList.contains('hidden')) return (blob && blob.saved) ? 'saved' : 'preview';
-    if (!$('activeControls').classList.contains('hidden')) return 'rec';
-    if (!$('screenGuide').classList.contains('hidden') && $('idleControls').classList.contains('hidden')) return 'guide';
-    return 'idle';
-  }
-  const GUIDE = {
-    home:    { n: 0, label: 'p_choose',  coach: 'coach_home',    finger: 'fingerHome', main: 'main_home',    back: false },
-    idle:    { n: 1, label: 'p_record',  coach: 'coach_idle',    finger: 'fingerRec',  main: 'main_idle',    back: true },
-    rec:     { n: 1, label: 'p_record',  coach: 'coach_rec',     finger: 'fingerStop', main: 'main_rec',     back: true },
-    preview: { n: 2, label: 'p_save',    coach: 'coach_preview', finger: 'fingerSave', main: 'main_preview', back: true },
-    guide:   { n: 1, label: 'p_record',  coach: 'coach_guide',   finger: null,         main: 'main_import',  back: true },
-    saved:   { n: 3, label: 'p_library', coach: 'coach_saved',   finger: null,         main: 'main_saved',   back: true }
-  };
-  function updateSteps() {
-    const st = guideState(), g = GUIDE[st];
-    pillEls.forEach((el, i) => { el.classList.toggle('on', i === g.n); el.classList.toggle('done', i < g.n); });
-    $('progressFill').style.width = ((g.n + 1) * 25) + '%';
-    $('progressWrap').setAttribute('aria-valuenow', g.n + 1);
-    $('stepLabel').textContent = t('step_label', { n: g.n + 1, label: t(g.label) });
-    $('recBadge').textContent = g.n + 1 > 4 ? 4 : Math.max(2, g.n + 1);
-    $('coachText').textContent = t(g.coach);
-    $('coach').classList.toggle('hidden', st === 'home');
-    FINGERS.forEach(id => $(id).classList.toggle('hidden', id !== g.finger));
-    $('barMain').textContent = t(g.main);
-    $('barMain').className = 'btn' + (st === 'rec' ? ' danger' : st === 'preview' ? ' green' : '');
-    $('barBack').disabled = !g.back;
-  }
-  $('barBack').onclick = () => $('backHome').click();
-  $('barMain').onclick = () => {
-    const st = guideState();
-    if (st === 'home') $('voiceMode').click();
-    else if (st === 'idle') $('startBtn').click();
-    else if (st === 'rec') $('stopBtn').click();
-    else if (st === 'preview') $('saveBtn').click();
-    else if (st === 'guide') $('importBtn').click();
-    else $('resetBtn').click();
-  };
-  const stepObs = new MutationObserver(updateSteps);
-  ['home', 'recorder', 'previewArea', 'idleControls', 'activeControls', 'screenGuide'].forEach(id =>
-    stepObs.observe($(id), { attributes: true, attributeFilter: ['class'] }));
-  updateSteps();
-
-  // ——— Core helpers ———
-  function vibrate() { try { navigator.vibrate?.(10); } catch {} }
-  function fmt(ms) {
-    const s = Math.floor(ms / 1000);
-    return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
-  }
-  function setStatus(k, live = false) {
-    lastStatus = k; lastLive = live;
-    $('statusText').textContent = t(k);
-    $('statusDot').classList.toggle('live', live);
-  }
-  function message(k, v) { lastMsg = k ? [k, v] : null; $('supportMessage').textContent = k ? t(k, v) : ''; }
-
-  // ——— IndexedDB ———
-  function openDB() {
-    return new Promise((resolve, reject) => {
-      if (!('indexedDB' in window)) { reject(Error('IndexedDB is unavailable')); return; }
-      const r = indexedDB.open(DB, 1);
-      r.onupgradeneeded = () => {
-        const d = r.result;
-        if (!d.objectStoreNames.contains(STORE)) {
-          const s = d.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true });
-          s.createIndex('createdAt', 'createdAt');
-        }
-      };
-      r.onsuccess = () => resolve(r.result);
-      r.onerror = () => reject(r.error);
-    });
-  }
-  function tx(mode) { return db.transaction(STORE, mode).objectStore(STORE); }
-  function allRecords() {
-    return new Promise((res, rej) => {
-      const r = tx('readonly').getAll();
-      r.onsuccess = () => res(r.result.sort((a, b) => b.createdAt - a.createdAt));
-      r.onerror = () => rej(r.error);
-    });
-  }
-  function saveRecord(item) {
-    return new Promise((res, rej) => {
-      const r = tx('readwrite').add(item);
-      r.onsuccess = () => res(r.result);
-      r.onerror = () => rej(r.error);
-    });
-  }
-  function updateRecord(item) {
-    return new Promise((res, rej) => {
-      const r = tx('readwrite').put(item);
-      r.onsuccess = () => res();
-      r.onerror = () => rej(r.error);
-    });
-  }
-  function deleteRecord(id) {
-    return new Promise((res, rej) => {
-      const r = tx('readwrite').delete(id);
-      r.onsuccess = () => res();
-      r.onerror = () => rej(r.error);
-    });
-  }
-  function durationOf(item) { return fmt(item.duration || 0); }
-  function sizeText(n) {
-    return n < 1048576 ? `${(n / 1024).toFixed(0)} KB` : `${(n / 1048576).toFixed(1)} MB`;
-  }
-
-  async function renderLibrary() {
-    try {
-      const items = await allRecords();
-      const root = $('library');
-      root.innerHTML = '';
-      if (!items.length) {
-        root.innerHTML = '<p class="muted">' + t('lib_empty') + '</p>';
-        return;
-      }
-      for (const item of items) {
-        const el = document.createElement('div');
-        el.className = 'library-item';
-        const title = document.createElement('div');
-        title.className = 'item-title';
-        title.textContent = item.name;
-        const meta = document.createElement('div');
-        meta.className = 'meta';
-        meta.textContent = `${t('type_' + item.type)} · ${durationOf(item)} · ${new Date(item.createdAt).toLocaleString()} · ${sizeText(item.size)}`;
-        const actions = document.createElement('div');
-        actions.className = 'row';
-        ['play', 'download', 'share', 'rename', 'delete'].forEach(act => {
-          const b = document.createElement('button');
-          b.type = 'button';
-          b.className = 'smallbtn';
-          b.textContent = t('a_' + act);
-          b.addEventListener('click', () => libraryAction(item, act));
-          actions.append(b);
-        });
-        el.append(title, meta, actions);
-        root.append(el);
-      }
-    } catch (e) {
-      $('library').textContent = t('m_lib_load', { m: e.message });
-    }
-  }
-
-  async function libraryAction(item, act) {
-    if (act === 'delete') {
-      if (confirm(t('c_delete', { name: item.name }))) {
-        await deleteRecord(item.id);
-        renderLibrary();
-      }
-      return;
-    }
-    if (act === 'rename') {
-      const n = prompt(t('c_rename'), item.name);
-      if (n && n.trim()) {
-        item.name = n.trim().slice(0, 80);
-        await updateRecord(item);
-        renderLibrary();
-      }
-      return;
-    }
-    const url = URL.createObjectURL(item.blob);
-    if (act === 'play') {
-      const w = window.open('', '_blank');
-      if (w) {
-        w.document.write(`<title>Playback</title><${item.type === 'voice' ? 'audio' : 'video'} controls autoplay playsinline style="width:95%;max-width:640px" src="${url}"></${item.type === 'voice' ? 'audio' : 'video'}>`);
-        w.document.close();
-      } else {
-        const a = document.createElement('a');
-        a.href = url;
-        a.textContent = t('play_link');
-        a.target = '_blank';
-        a.click();
-      }
-    }
-    if (act === 'download') downloadBlob(item.blob, filename(item.name, item.mime));
-    if (act === 'share') await shareBlob(item.blob, filename(item.name, item.mime));
-    setTimeout(() => URL.revokeObjectURL(url), 60000);
-  }
-
-  function filename(name, mime) {
-    const ext = mime.includes('mp4') ? 'mp4' : mime.includes('webm') ? 'webm' : mime.includes('ogg') ? 'ogg' : 'm4a';
-    return (name || 'recording').replace(/[\\/:*?"<>|]/g, '-') + '.' + ext;
-  }
-  function downloadBlob(b, n) {
-    const u = URL.createObjectURL(b);
-    const a = document.createElement('a');
-    a.href = u;
-    a.download = n;
-    document.body.append(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(u), 30000);
-  }
-  async function shareBlob(b, n) {
-    if (!navigator.share) {
-      message('m_share_unsupported');
-      return;
-    }
-    const f = new File([b], n, { type: b.type || 'application/octet-stream' });
-    try {
-      if (navigator.canShare && navigator.canShare({ files: [f] })) {
-        await navigator.share({ files: [f], title: 'RecVoiceNow recording' });
-      } else {
-        message('m_share_nofile');
-      }
-    } catch (e) {
-      if (e.name !== 'AbortError') message('m_share_fail', { m: e.message });
-    }
-  }
-
-  async function acquireWake() {
-    try { if (navigator.wakeLock && !wakeLock) { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); } } catch {}
-  }
-  function releaseWake() { try { wakeLock && wakeLock.release(); } catch {} wakeLock = null; }
-  document.addEventListener('visibilitychange', () => {
-    const active = recorder && recorder.state !== 'inactive';
-    if (document.hidden && active) interrupted = true;
-    if (!document.hidden) {
-      if (active) acquireWake();
-      if (interrupted) {
-        interrupted = false;
-        message('m_bg');
-      }
-    }
+function t(k, vars) {
+  let s = (I18N[lang] && I18N[lang][k]) || I18N.en[k] || k;
+  if (vars) Object.keys(vars).forEach(v => { s = s.replace('{'+v+'}', vars[v]); });
+  return s;
+}
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const val = t(el.dataset.i18n);
+    el.innerHTML = val.includes('\\n') ? val.replace(/\\n/g, '<br>') : val.includes('\n') ? val.replace(/\n/g, '<br>') : val;
   });
-  function stopTracks() {
-    releaseWake();
-    clearTimeout(silenceTimer);
-    if (stream) {
-      stream.getTracks().forEach(t => t.stop());
-      stream = null;
-    }
-    if (audioCtx) {
-      audioCtx.close().catch(() => {});
-      audioCtx = null;
-    }
-    cancelAnimationFrame(raf);
-    $('livePreview').srcObject = null;
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+  $('langEn').classList.toggle('on', lang === 'en');
+  $('langJa').classList.toggle('on', lang === 'ja');
+  const search = $('searchLib');
+  if (search) search.placeholder = lang === 'ja' ? '録音を検索…' : 'Search recordings…';
+}
+function applyTheme(theme) {
+  if (theme === 'light' || theme === 'dark') document.documentElement.setAttribute('data-theme', theme);
+  else document.documentElement.removeAttribute('data-theme');
+}
+function initTheme() {
+  const s = localStorage.getItem(THEME_KEY);
+  if (s === 'light' || s === 'dark') applyTheme(s);
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  let next = cur === 'dark' ? 'light' : cur === 'light' ? 'dark' : (matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'dark');
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
+}
+function fmt(ms) {
+  const s = Math.floor(ms / 1000);
+  return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}
+function setStatus(key, live) {
+  $('statusText').textContent = t(key);
+  $('statusDot').classList.toggle('live', !!live);
+}
+function msg(key, vars) { $('msg').textContent = key ? t(key, vars) : ''; }
+function sizeText(n) { return n < 1048576 ? (n/1024).toFixed(0)+' KB' : (n/1048576).toFixed(1)+' MB'; }
+
+function openDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open(DB, 1);
+    r.onupgradeneeded = () => {
+      const d = r.result;
+      if (!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true }).createIndex('createdAt', 'createdAt');
+    };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+function tx(mode) { return db.transaction(STORE, mode).objectStore(STORE); }
+function allRecords() {
+  return new Promise((res, rej) => {
+    const r = tx('readonly').getAll();
+    r.onsuccess = () => res(r.result.sort((a,b) => b.createdAt - a.createdAt));
+    r.onerror = () => rej(r.error);
+  });
+}
+function saveRecord(item) {
+  return new Promise((res, rej) => {
+    const r = tx('readwrite').add(item);
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+function updateRecord(item) {
+  return new Promise((res, rej) => {
+    const r = tx('readwrite').put(item);
+    r.onsuccess = () => res();
+    r.onerror = () => rej(r.error);
+  });
+}
+function deleteRecord(id) {
+  return new Promise((res, rej) => {
+    const r = tx('readwrite').delete(id);
+    r.onsuccess = () => res();
+    r.onerror = () => rej(r.error);
+  });
+}
+
+async function renderLibrary(filter = '') {
+  const items = await allRecords();
+  const q = filter.trim().toLowerCase();
+  const list = q ? items.filter(i => (i.name||'').toLowerCase().includes(q)) : items;
+  const root = $('libList');
+  root.innerHTML = '';
+  if (!list.length) {
+    root.innerHTML = '<p class="muted">' + t('lib_empty') + '</p>';
+    $('storageInfo').textContent = '';
+    return;
   }
-  function clearTick() {
-    clearInterval(tick);
-    tick = null;
+  let total = 0;
+  for (const item of list) {
+    total += item.size || 0;
+    const el = document.createElement('div');
+    el.className = 'lib-item';
+    el.innerHTML = '<div class="lib-title"></div><div class="lib-meta"></div><div class="lib-actions"></div>';
+    el.querySelector('.lib-title').textContent = item.name;
+    el.querySelector('.lib-meta').textContent = (item.type||'voice') + ' · ' + fmt(item.duration||0) + ' · ' + new Date(item.createdAt).toLocaleString() + ' · ' + sizeText(item.size||0);
+    const actions = el.querySelector('.lib-actions');
+    [['a_play','play'],['a_dl','download'],['a_share','share'],['a_ren','rename'],['a_del','delete']].forEach(([k,act]) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip'; b.textContent = t(k);
+      b.onclick = () => libAction(item, act);
+      actions.append(b);
+    });
+    root.append(el);
   }
+  $('storageInfo').textContent = t('storage', { n: sizeText(total) });
+}
 
-  function drawWave() {
-    if (!analyser) return;
-    const c = $('wave');
-    const ctx = c.getContext('2d');
-    const data = new Uint8Array(analyser.fftSize);
-    analyser.getByteTimeDomainData(data);
-    ctx.clearRect(0, 0, c.width, c.height);
-    ctx.beginPath();
-    for (let i = 0; i < data.length; i++) {
-      const x = (i / data.length) * c.width;
-      const y = (data[i] / 255) * c.height;
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    let dev = 0;
-    for (let i = 0; i < data.length; i++) dev = Math.max(dev, Math.abs(data[i] - 128));
-    peak = Math.max(peak, dev);
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--gold').trim() || '#d4b062';
-    ctx.stroke();
-    raf = requestAnimationFrame(drawWave);
+async function libAction(item, act) {
+  if (act === 'delete') {
+    if (confirm('Delete "' + item.name + '"?')) { await deleteRecord(item.id); renderLibrary($('searchLib').value); }
+    return;
   }
-
-  function chooseMime(list) {
-    if (!window.MediaRecorder?.isTypeSupported) return '';
-    return list.find(t => MediaRecorder.isTypeSupported(t)) || '';
+  if (act === 'rename') {
+    const n = prompt('Name', item.name);
+    if (n && n.trim()) { item.name = n.trim().slice(0,80); await updateRecord(item); renderLibrary($('searchLib').value); }
+    return;
   }
-  function friendlyError(e) {
-    if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') return t('e_denied');
-    if (e.name === 'NotFoundError') return t('e_notfound');
-    if (e.name === 'NotReadableError') return t('e_busy');
-    return e.message || t('e_unavail');
-  }
-
-  async function start() {
-    vibrate();
-    message('');
-    chunks = [];
-    blob = null;
-    $('previewArea').classList.add('hidden');
-    $('audioPreview').classList.add('hidden');
-    $('videoPreview').classList.add('hidden');
-    $('livePreview').classList.toggle('hidden', mode !== 'screen');
-
-    try {
-      if (isAudio()) {
-        if (!navigator.mediaDevices?.getUserMedia)
-          throw Error(t('e_nomic'));
-        const tuned = mode === 'ambient'
-          ? { echoCancellation: false, noiseSuppression: false, autoGainControl: true }
-          : { echoCancellation: true, noiseSuppression: true, autoGainControl: true };
-        try {
-          stream = await navigator.mediaDevices.getUserMedia({ audio: tuned });
-        } catch (err) {
-          if (err && (err.name === 'OverconstrainedError' || err.name === 'TypeError')) stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          else throw err;
-        }
-        currentMime = chooseMime(['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus']) || '';
-      } else {
-        if (!navigator.mediaDevices?.getDisplayMedia)
-          throw Error(t('e_noscreen'));
-        try {
-          stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-        } catch (err) {
-          if (err && (err.name === 'TypeError' || err.name === 'OverconstrainedError')) stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-          else throw err;
-        }
-        currentMime = chooseMime(['video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm']) || '';
-        $('livePreview').srcObject = stream;
-        $('livePreview').classList.remove('hidden');
-      }
-
-      const opts = currentMime ? { mimeType: currentMime } : undefined;
-      recorder = new MediaRecorder(stream, opts);
-      currentMime = recorder.mimeType || currentMime || (isAudio() ? 'audio/webm' : 'video/webm');
-
-      recorder.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
-      recorder.onerror = e => message('m_rec_err', { m: e.error?.message || t('m_unknown') });
-      recorder.onstop = () => {
-        clearTick();
-        if (!paused) elapsed += Date.now() - startedAt;
-        blob = new Blob(chunks, { type: currentMime });
-        stopTracks();
-        $('timer').textContent = fmt(elapsed);
-        $('idleControls').classList.remove('hidden');
-        $('activeControls').classList.add('hidden');
-        $('previewArea').classList.remove('hidden');
-        $('recordName').value = t('name_' + mode);
-        if (isAudio()) {
-          $('audioPreview').src = URL.createObjectURL(blob);
-          $('audioPreview').classList.remove('hidden');
-        } else {
-          $('videoPreview').src = URL.createObjectURL(blob);
-          $('videoPreview').classList.remove('hidden');
-        }
-        setStatus('s_ready_save');
-        message(blob.size ? 'm_captured' : 'm_nodata');
-      };
-
-      recorder.start(1000);
-      acquireWake();
-      peak = 0; clearTimeout(silenceTimer);
-      if (isAudio()) silenceTimer = setTimeout(() => {
-        if (recorder && recorder.state === 'recording' && audioCtx && audioCtx.state === 'running' && peak < 2)
-          message('m_silence');
-      }, 5000);
-      startedAt = Date.now();
-      elapsed = 0;
-      paused = false;
-      setStatus('s_rec', true);
-      $('timer').textContent = '00:00';
-      $('idleControls').classList.add('hidden');
-      $('activeControls').classList.remove('hidden');
-      $('pauseBtn').textContent = t('btn_pause');
-      $('previewArea').classList.add('hidden');
-      tick = setInterval(() => {
-        $('timer').textContent = fmt(elapsed + Date.now() - startedAt);
-      }, 250);
-
-      if (isAudio() && stream.getAudioTracks()[0]) {
-        try {
-          audioCtx = new AudioContext();
-          if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
-          analyser = audioCtx.createAnalyser();
-          analyser.fftSize = 1024;
-          audioCtx.createMediaStreamSource(stream).connect(analyser);
-          drawWave();
-        } catch {}
-      }
-
-      stream.getTracks().forEach(t => t.addEventListener('ended', () => {
-        if (recorder && recorder.state !== 'inactive') recorder.stop();
-      }));
-    } catch (e) {
-      stopTracks();
-      setStatus('s_ready');
-      message(friendlyError(e));
+  const url = URL.createObjectURL(item.blob);
+  if (act === 'play') {
+    const w = window.open('', '_blank');
+    if (w) {
+      const tag = (item.type === 'screen' || (item.mime||'').startsWith('video')) ? 'video' : 'audio';
+      w.document.write('<title>Play</title><'+tag+' controls autoplay playsinline style="width:95%;max-width:640px" src="'+url+'"></'+tag+'>');
+      w.document.close();
     }
   }
+  if (act === 'download') downloadBlob(item.blob, filename(item.name, item.mime));
+  if (act === 'share') shareBlob(item.blob, filename(item.name, item.mime));
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
 
-  function pause() {
-    if (!recorder) return;
-    if (recorder.state === 'recording') {
-      recorder.pause();
-      elapsed += Date.now() - startedAt;
-      paused = true;
+function filename(name, mime) {
+  const ext = (mime||'').includes('mp4') ? 'mp4' : (mime||'').includes('webm') ? 'webm' : 'm4a';
+  return (name||'recording').replace(/[\\/:*?"<>|]/g, '-') + '.' + ext;
+}
+function downloadBlob(b, n) {
+  const u = URL.createObjectURL(b);
+  const a = document.createElement('a');
+  a.href = u; a.download = n; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(u), 30000);
+}
+async function shareBlob(b, n) {
+  if (!navigator.share) return;
+  const f = new File([b], n, { type: b.type || 'application/octet-stream' });
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [f] })) await navigator.share({ files: [f], title: 'RecVoiceNow' });
+  } catch (e) { if (e.name !== 'AbortError') {} }
+}
+
+function drawWave() {
+  if (!analyser) return;
+  const c = $('wave'), ctx = c.getContext('2d');
+  const data = new Uint8Array(analyser.fftSize);
+  analyser.getByteTimeDomainData(data);
+  ctx.clearRect(0, 0, c.width, c.height);
+  ctx.beginPath();
+  for (let i = 0; i < data.length; i++) {
+    const x = (i / data.length) * c.width, y = (data[i] / 255) * c.height;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--gold').trim() || '#d4b062';
+  ctx.stroke();
+  raf = requestAnimationFrame(drawWave);
+}
+function stopTracks() {
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  if (audioCtx) { audioCtx.close().catch(()=>{}); audioCtx = null; }
+  cancelAnimationFrame(raf);
+}
+function clearTick() { clearInterval(tick); tick = null; }
+function chooseMime(list) {
+  if (!window.MediaRecorder?.isTypeSupported) return '';
+  return list.find(t => MediaRecorder.isTypeSupported(t)) || '';
+}
+
+async function start() {
+  msg(''); chunks = []; blob = null;
+  $('previewArea').classList.add('hidden');
+  $('audioPreview').classList.add('hidden');
+  $('videoPreview').classList.add('hidden');
+  try {
+    if (!navigator.mediaDevices?.getUserMedia) throw Error('no mic');
+    const constraints = mode === 'ambient' ? { audio: true } : { audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } };
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
+    currentMime = chooseMime(['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm']) || '';
+    recorder = new MediaRecorder(stream, currentMime ? { mimeType: currentMime } : undefined);
+    currentMime = recorder.mimeType || currentMime || 'audio/webm';
+    recorder.ondataavailable = e => { if (e.data?.size) chunks.push(e.data); };
+    recorder.onstop = () => {
       clearTick();
-      $('pauseBtn').textContent = t('btn_resume');
-      setStatus('s_paused');
-    } else if (recorder.state === 'paused') {
-      recorder.resume();
-      startedAt = Date.now();
-      paused = false;
-      tick = setInterval(() => {
-        $('timer').textContent = fmt(elapsed + Date.now() - startedAt);
-      }, 250);
-      $('pauseBtn').textContent = t('btn_pause');
-      setStatus('s_rec', true);
-    }
-  }
-
-  function stop() {
-    if (recorder && recorder.state !== 'inactive') {
-      recorder.stop();
-      setStatus('s_finishing');
-    }
-  }
-
-  async function save() {
-    if (!blob) return;
-    const name = $('recordName').value.trim() || 'Recording';
-    try {
-      await saveRecord({
-        name,
-        type: isAudio() ? 'voice' : 'screen',
-        mime: blob.type || currentMime,
-        duration: elapsed,
-        size: blob.size,
-        createdAt: Date.now(),
-        blob
-      });
-      blob.saved = true;
-      message('m_saved');
-      updateSteps();
-      await renderLibrary();
-    } catch (e) {
-      message('m_save_fail', { m: e.message });
-    }
-  }
-
-  function selectMode(m) {
-    mode = m;
-    $('home').classList.add('hidden');
-    $('recorder').classList.remove('hidden');
-    // On iOS, getDisplayMedia is too limited for real screen+audio → always guide user to Control Center + Import
-    const noScreen = m === 'screen' && (isIOS || !navigator.mediaDevices?.getDisplayMedia);
-    modeTexts();
-    $('screenNotice').classList.toggle('hidden', m !== 'screen' || noScreen);
-    $('screenGuide').classList.toggle('hidden', !noScreen);
-    $('ambientNotice').classList.toggle('hidden', m !== 'ambient');
-    $('idleControls').classList.toggle('hidden', noScreen);
-    // When guide is shown, make Import the primary action
-    if (noScreen && $('importBtn')) {
-      $('importBtn').textContent = t('main_import_ios') || t('main_import');
-    }
-    $('livePreview').classList.add('hidden');
+      if (!paused) elapsed += Date.now() - startedAt;
+      blob = new Blob(chunks, { type: currentMime });
+      stopTracks();
+      $('timer').textContent = fmt(elapsed);
+      $('idleControls').classList.remove('hidden');
+      $('activeControls').classList.add('hidden');
+      $('previewArea').classList.remove('hidden');
+      $('recordName').value = mode === 'ambient' ? (lang === 'ja' ? '周囲の音' : 'Room sound') : (lang === 'ja' ? '音声録音' : 'Voice recording');
+      $('audioPreview').src = URL.createObjectURL(blob);
+      $('audioPreview').classList.remove('hidden');
+      setStatus('s_done');
+    };
+    recorder.start(1000);
+    startedAt = Date.now(); elapsed = 0; paused = false;
+    setStatus('s_rec', true);
     $('timer').textContent = '00:00';
-    setStatus('s_ready');
-    message(noScreen ? '' : m === 'screen' ? 'm_tap_screen' : 'm_tap_mic');
-    window.scrollTo(0, 0);
-    updateSteps();
-  }
-
-  // Events
-  $('voiceMode').onclick = () => selectMode('voice');
-  $('ambientMode').onclick = () => selectMode('ambient');
-  $('screenMode').onclick = () => selectMode('screen');
-  $('backHome').onclick = () => {
-    if (recorder && recorder.state !== 'inactive') stop();
-    $('recorder').classList.add('hidden');
-    $('home').classList.remove('hidden');
-  };
-
-  // Reset: discard the current take and return to a fresh, ready-to-record state
-  function resetRecording() {
-    const onHome = $('recorder').classList.contains('hidden');
-    const active = recorder && recorder.state !== 'inactive';
-    const unsaved = blob && !blob.saved;
-    if ((active || unsaved) && !confirm(t('c_reset'))) return;
-    vibrate();
-    if (recorder) {
-      recorder.ondataavailable = null;
-      recorder.onstop = null;
-      recorder.onerror = null;
-      if (recorder.state !== 'inactive') { try { recorder.stop(); } catch {} }
-    }
-    recorder = null;
-    clearTick();
-    stopTracks();
-    chunks = []; blob = null; elapsed = 0; paused = false; startedAt = 0; interrupted = false;
-    ['audioPreview', 'videoPreview'].forEach(id => {
-      const el = $(id);
-      if (el.src) { try { URL.revokeObjectURL(el.src); } catch {} }
-      el.pause?.(); el.removeAttribute('src'); el.load?.(); el.classList.add('hidden');
-    });
-    $('livePreview').classList.add('hidden');
-    $('previewArea').classList.add('hidden');
-    $('activeControls').classList.add('hidden');
-    $('idleControls').classList.remove('hidden');
-    $('screenGuide').classList.add('hidden');
+    $('idleControls').classList.add('hidden');
+    $('activeControls').classList.remove('hidden');
     $('pauseBtn').textContent = t('btn_pause');
-    $('timer').textContent = '00:00';
-    const c = $('wave'); c.getContext('2d').clearRect(0, 0, c.width, c.height);
-    setStatus('s_ready');
-    message('');
-    // back to step 1
-    $('recorder').classList.add('hidden');
-    $('home').classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: onHome ? 'smooth' : 'auto' });
-    updateSteps();
-  }
-  $('resetBtn').onclick = resetRecording;
-  $('langEn').onclick = () => setLang('en');
-  $('langJa').onclick = () => setLang('ja');
-  // Import recordings made elsewhere (e.g. iPhone Screen Recording saved in Photos)
-  function mediaDuration(file) {
-    return new Promise(res => {
-      const el = document.createElement(file.type.startsWith('video') ? 'video' : 'audio');
-      const url = URL.createObjectURL(file);
-      const done = d => { URL.revokeObjectURL(url); res(d); };
-      el.preload = 'metadata';
-      el.onloadedmetadata = () => done(isFinite(el.duration) ? el.duration * 1000 : 0);
-      el.onerror = () => done(0);
-      setTimeout(() => done(0), 4000);
-      el.src = url;
-    });
-  }
-  async function importFiles(files) {
-    let n = 0;
-    for (const f of files) {
-      if (!/^(video|audio)\//.test(f.type)) continue;
-      try {
-        await saveRecord({
-          name: f.name.replace(/\.[^.]+$/, '').slice(0, 80) || 'Imported recording',
-          type: f.type.startsWith('video') ? 'screen' : 'voice',
-          mime: f.type, duration: await mediaDuration(f), size: f.size, createdAt: Date.now(), blob: f
-        });
-        n++;
-      } catch (e) { message('m_import_fail', { m: e.message }); }
-    }
-    if (n) { message('m_imported', { n }); await renderLibrary(); }
-    else message('m_import_none');
-    $('importFile').value = '';
-  }
-  $('importBtn').onclick = () => $('importFile').click();
-  $('altMethod').onclick = () => { $('screenGuide').classList.remove('hidden'); $('screenGuide').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
-  $('importLib').onclick = () => $('importFile').click();
-  $('importFile').onchange = e => importFiles([...e.target.files]);
-  $('startBtn').onclick = start;
-  $('pauseBtn').onclick = pause;
-  $('stopBtn').onclick = stop;
-  $('saveBtn').onclick = save;
-  $('downloadBtn').onclick = () => blob && downloadBlob(blob, filename($('recordName').value, currentMime));
-  $('shareBtn').onclick = () => blob && shareBlob(blob, filename($('recordName').value, currentMime));
-  $('refreshLibrary').onclick = renderLibrary;
-
-  // ——— Local Transcription (Web Speech API) ———
-  function startTranscribe() {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) {
-      message('m_transcribe_unsupported');
-      const box = $('transcriptBox');
-      if (box) {
-        box.classList.remove('hidden');
-        box.textContent = t('m_transcribe_unsupported');
-      }
-      return;
-    }
-    const rec = new SR();
-    rec.lang = lang === 'ja' ? 'ja-JP' : 'en-US';
-    rec.continuous = true;
-    rec.interimResults = true;
-    let finalText = '';
-    const box = $('transcriptBox');
-    if (box) {
-      box.classList.remove('hidden');
-      box.textContent = t('m_transcribe_start');
-    }
-    message('m_transcribe_start');
-    rec.onresult = (e) => {
-      let interim = '';
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        const r = e.results[i];
-        if (r.isFinal) finalText += r[0].transcript + ' ';
-        else interim += r[0].transcript;
-      }
-      if (box) box.textContent = (finalText + interim).trim() || t('m_transcribe_start');
-    };
-    rec.onerror = (e) => {
-      message('m_transcribe_error', { m: e.error || 'unknown' });
-    };
-    rec.onend = () => {
-      if (finalText.trim()) message('m_transcribe_done');
-    };
-    try { rec.start(); } catch (e) {
-      message('m_transcribe_error', { m: e.message });
-    }
-  }
-  if ($('transcribeBtn')) $('transcribeBtn').onclick = startTranscribe;
-
-  // ——— Share Target: pick up files shared from Photos / Files ———
-  async function handleSharedImport() {
-    const params = new URLSearchParams(location.search);
-    if (params.get('shared') !== '1') return;
-    const key = params.get('key');
-    if (!key) return;
+    tick = setInterval(() => { $('timer').textContent = fmt(elapsed + Date.now() - startedAt); }, 250);
     try {
-      const cache = await caches.open('recvoicenow-v1.6.0-shared');
-      const resp = await cache.match(key);
-      if (!resp) return;
-      const blob = await resp.blob();
-      const name = resp.headers.get('X-Filename') || 'Shared recording';
-      const mime = blob.type || 'video/mp4';
+      audioCtx = new AudioContext();
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 1024;
+      audioCtx.createMediaStreamSource(stream).connect(analyser);
+      drawWave();
+    } catch (_) {}
+  } catch (e) {
+    stopTracks(); setStatus('s_ready');
+    msg(e.name === 'NotAllowedError' ? 'm_perm' : 'm_nosupport');
+  }
+}
+function pause() {
+  if (!recorder) return;
+  if (recorder.state === 'recording') {
+    recorder.pause(); elapsed += Date.now() - startedAt; paused = true; clearTick();
+    $('pauseBtn').textContent = t('btn_resume'); setStatus('s_paused');
+  } else if (recorder.state === 'paused') {
+    recorder.resume(); startedAt = Date.now(); paused = false;
+    tick = setInterval(() => { $('timer').textContent = fmt(elapsed + Date.now() - startedAt); }, 250);
+    $('pauseBtn').textContent = t('btn_pause'); setStatus('s_rec', true);
+  }
+}
+function stop() {
+  if (recorder && recorder.state !== 'inactive') { recorder.stop(); setStatus('s_done'); }
+}
+async function save() {
+  if (!blob) return;
+  const name = $('recordName').value.trim() || 'Recording';
+  try {
+    await saveRecord({ name, type: mode === 'other' ? 'screen' : mode, mime: blob.type || currentMime, duration: elapsed, size: blob.size, createdAt: Date.now(), blob });
+    msg('m_saved'); await renderLibrary();
+  } catch (_) { msg('m_nosupport'); }
+}
+
+function show(id) {
+  ['home','recorder','library'].forEach(s => $(s).classList.toggle('hidden', s !== id));
+  window.scrollTo(0, 0);
+}
+function selectMode(m) {
+  mode = m;
+  show('recorder');
+  const isOther = m === 'other';
+  $('modeTitle').textContent = t(isOther ? 'title_other' : m === 'ambient' ? 'title_ambient' : 'title_voice');
+  $('modeDesc').textContent = t(isOther ? 'desc_other' : m === 'ambient' ? 'desc_ambient' : 'desc_voice');
+  $('otherGuide').classList.toggle('hidden', !isOther);
+  $('ambientNote').classList.toggle('hidden', m !== 'ambient');
+  $('recUI').classList.toggle('hidden', isOther);
+  $('previewArea').classList.add('hidden');
+  $('timer').textContent = '00:00';
+  setStatus('s_ready'); msg('');
+  if ($('transcriptBox')) { $('transcriptBox').classList.add('hidden'); $('transcriptBox').textContent = ''; }
+}
+
+function mediaDuration(file) {
+  return new Promise(res => {
+    const el = document.createElement(file.type.startsWith('video') ? 'video' : 'audio');
+    const url = URL.createObjectURL(file);
+    const done = d => { URL.revokeObjectURL(url); res(d); };
+    el.preload = 'metadata';
+    el.onloadedmetadata = () => done(isFinite(el.duration) ? el.duration * 1000 : 0);
+    el.onerror = () => done(0);
+    setTimeout(() => done(0), 4000);
+    el.src = url;
+  });
+}
+async function importFiles(files) {
+  let n = 0;
+  for (const f of files) {
+    if (!/^(video|audio)\//.test(f.type)) continue;
+    try {
       await saveRecord({
-        name: name.replace(/\.[^.]+$/, '').slice(0, 80) || 'Shared recording',
-        type: mime.startsWith('video') ? 'screen' : 'voice',
-        mime, duration: 0, size: blob.size, createdAt: Date.now(), blob
+        name: (f.name || 'Imported').replace(/\.[^.]+$/, '').slice(0, 80),
+        type: f.type.startsWith('video') ? 'screen' : 'voice',
+        mime: f.type, duration: await mediaDuration(f), size: f.size, createdAt: Date.now(), blob: f
       });
-      message('m_imported', { n: 1 });
-      await renderLibrary();
-      // Clean URL
-      history.replaceState({}, '', location.pathname);
-      await cache.delete(key);
-    } catch (e) {
-      message('m_import_fail', { m: e.message });
-    }
+      n++;
+    } catch (_) {}
   }
+  msg(n ? 'm_imported' : 'm_import_none', { n });
+  if (n) await renderLibrary();
+  $('importFile').value = '';
+}
 
-  // Boot
-  (async () => {
-    try {
-      db = await openDB();
-      await renderLibrary();
-      await handleSharedImport();
-    } catch (e) {
-      message('m_lib_unavail', { m: e.message });
-      $('library').textContent = t('m_lib_nosupport');
+function startTranscribe() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const box = $('transcriptBox');
+  if (!SR) { box.classList.remove('hidden'); box.textContent = t('m_transcribe_no'); return; }
+  const rec = new SR();
+  rec.lang = lang === 'ja' ? 'ja-JP' : 'en-US';
+  rec.continuous = true; rec.interimResults = true;
+  let finalText = '';
+  box.classList.remove('hidden'); box.textContent = t('m_transcribe_start');
+  rec.onresult = e => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) finalText += e.results[i][0].transcript + ' ';
+      else interim += e.results[i][0].transcript;
     }
-    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
-    }
-    if (!window.isSecureContext) {
-      message('m_https');
-    }
-  })();
-  lang = getStoredLang() === 'ja' ? 'ja' : 'en';
+    box.textContent = (finalText + interim).trim() || t('m_transcribe_start');
+  };
+  rec.onend = () => { if (finalText.trim()) msg('m_transcribe_done'); };
+  try { rec.start(); } catch (_) { box.textContent = t('m_transcribe_no'); }
+}
+
+async function handleShared() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('shared') !== '1') return;
+  const key = params.get('key');
+  if (!key) return;
+  try {
+    const cache = await caches.open('recvoicenow-v2.0.0-shared');
+    const resp = await cache.match(key);
+    if (!resp) return;
+    const b = await resp.blob();
+    const name = resp.headers.get('X-Filename') || 'Shared';
+    await saveRecord({
+      name: name.replace(/\.[^.]+$/, '').slice(0, 80),
+      type: (b.type||'').startsWith('video') ? 'screen' : 'voice',
+      mime: b.type, duration: 0, size: b.size, createdAt: Date.now(), blob: b
+    });
+    msg('m_imported', { n: 1 });
+    history.replaceState({}, '', location.pathname);
+    await cache.delete(key);
+    show('library'); await renderLibrary();
+  } catch (_) {}
+}
+
+document.querySelectorAll('.case').forEach(btn => { btn.onclick = () => selectMode(btn.dataset.mode || 'voice'); });
+$('startVoice').onclick = () => selectMode('voice');
+$('startOther').onclick = () => selectMode('other');
+$('goLibrary').onclick = async () => { show('library'); await renderLibrary(); };
+$('backHome').onclick = () => { if (recorder && recorder.state !== 'inactive') stop(); show('home'); };
+$('backFromLib').onclick = () => show('home');
+$('startBtn').onclick = start;
+$('pauseBtn').onclick = pause;
+$('stopBtn').onclick = stop;
+$('saveBtn').onclick = save;
+$('downloadBtn').onclick = () => blob && downloadBlob(blob, filename($('recordName').value, currentMime));
+$('shareBtn').onclick = () => blob && shareBlob(blob, filename($('recordName').value, currentMime));
+$('transcribeBtn').onclick = startTranscribe;
+$('importBtn').onclick = () => $('importFile').click();
+$('importLib').onclick = () => $('importFile').click();
+$('importFile').onchange = e => importFiles([...e.target.files]);
+$('searchLib').oninput = e => renderLibrary(e.target.value);
+$('langEn').onclick = () => { lang = 'en'; localStorage.setItem(LANG_KEY, 'en'); applyLang(); };
+$('langJa').onclick = () => { lang = 'ja'; localStorage.setItem(LANG_KEY, 'ja'); applyLang(); };
+$('themeToggle').onclick = toggleTheme;
+
+(async () => {
+  initTheme();
+  lang = localStorage.getItem(LANG_KEY) === 'ja' ? 'ja' : 'en';
   applyLang();
+  try { db = await openDB(); await handleShared(); } catch (_) {}
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+})();
 })();
 </script>
 </body>
