@@ -146,6 +146,20 @@ h2 { font-size: 20px; margin: 0 0 12px; font-weight: 800; letter-spacing: -.3px;
 .btn.light { background: var(--panel2); border: 1.5px solid var(--line); color: var(--ink); }
 .btn.danger { background: var(--red); color: #fff; }
 .btn.green { background: var(--green); color: #fff; }
+.btn.green { background: var(--green); color: #fff; }
+.btn.import-btn {
+  background: linear-gradient(145deg, #2563eb, #1d4ed8);
+  color: #fff;
+  border: none;
+  box-shadow: 0 6px 18px rgba(37,99,235,.35);
+}
+.btn.import-btn:active { transform: scale(.97); }
+.smallbtn.import-btn {
+  background: color-mix(in srgb, #2563eb 18%, var(--panel));
+  border-color: #3b82f6;
+  color: #93c5fd;
+}
+
 .rec {
   width: 90px; height: 90px; border-radius: 50%; background: var(--red); color: #fff; font-size: 14px; font-weight: 900;
   box-shadow: 0 0 0 10px color-mix(in srgb, var(--red) 18%, transparent); transition: transform .12s;
@@ -258,7 +272,7 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
         <li data-i18n-html="guide_5"></li>
         <li data-i18n-html="guide_6"></li>
       </ol>
-      <div class="controls"><button type="button" class="btn" id="importBtn" data-i18n="main_import">📥 Import video</button></div>
+      <div class="controls"><button type="button" class="btn import-btn" id="importBtn" data-i18n="main_import">📥 Import video</button></div>
     </div>
     <div class="status"><span id="statusDot" class="dot"></span><span id="statusText">Ready to record</span></div>
     <div class="timer" id="timer">00:00</div>
@@ -291,7 +305,9 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
         </div>
         <button type="button" class="btn light" id="downloadBtn" data-i18n="btn_download">Download</button>
         <button type="button" class="btn light" id="shareBtn" data-i18n="btn_share">Share</button>
+        <button type="button" class="btn light" id="transcribeBtn" data-i18n="btn_transcribe">Transcribe</button>
       </div>
+      <div id="transcriptBox" class="notice hidden" style="margin-top:12px;white-space:pre-wrap"></div>
     </div>
     <p class="muted" id="supportMessage" role="status"></p>
   </section>
@@ -299,7 +315,7 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
   <section class="panel" id="libraryPanel">
     <div class="row between">
       <h2 data-i18n="lib_title">My Recordings</h2>
-      <span class="row"><button type="button" class="smallbtn" id="importLib" data-i18n="btn_import">Import</button><button type="button" class="smallbtn" id="refreshLibrary" data-i18n="btn_refresh">Refresh</button></span>
+      <span class="row"><button type="button" class="smallbtn import-btn" id="importLib" data-i18n="btn_import">Import</button><button type="button" class="smallbtn" id="refreshLibrary" data-i18n="btn_refresh">Refresh</button></span>
       <input type="file" id="importFile" accept="video/*,audio/*" multiple class="hidden">
     </div>
     <div id="library">
@@ -309,7 +325,7 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
 
   <footer>
     <div class="copy">© 2026 Rafat Kotaki. All rights reserved.</div>
-    <div>RecVoiceNow · V1.5.0</div>
+    <div>RecVoiceNow · V1.6.0</div>
   </footer>
 </main>
 
@@ -319,7 +335,7 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
 </div>
 
 <script>
-/* RecVoiceNow V1.5.0 — browser-only recorder. Data stays in IndexedDB on this device. */
+/* RecVoiceNow V1.6.0 — browser-only recorder. Data stays in IndexedDB on this device. */
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
@@ -331,6 +347,9 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
   let audioCtx, analyser, raf, currentMime = 'audio/webm';
   let wakeLock = null, interrupted = false, peak = 0, silenceTimer = null;
   const isAudio = () => mode !== 'screen';
+  // Detect iPhone / iPad more reliably for Screen Recording UX
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
 
   // ——— Language (EN / JP) ———
@@ -353,7 +372,7 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
       back: '‹ Back',
       screen_notice: '<b>On the iPhone prompt, tap “Share Entire Screen”</b> to record beyond Safari (the default “Safari” choice records only this app). Sound from other apps is usually not included, and recording may pause when you leave Safari. For reliable full-phone recording with sound, use the other method below.',
       alt_method: 'Other method: Control Center ›',
-      ambient_notice: '<b>Keep this screen open.</b> iPhone pauses web apps when you switch apps or lock the phone, so recording works only while this app stays on screen. We keep the display awake for you. Place the phone near the sound source for the best result.',
+      ambient_notice: '<b>Keep this screen open.</b> iPhone pauses web apps when you switch apps or lock the phone, so recording works only while this app stays on screen. We keep the display awake for you. Place the phone near the sound source for the best result.<br><br><b>Note:</b> On iPhone, playing music or audio from other apps may be paused or lowered while recording. This mode is designed for capturing live voices and environmental sounds.',
       guide_title: '📱 Record the whole phone (any app, with sound)',
       guide_intro: "Safari on iPhone cannot capture other apps. Use the iPhone's own recorder, then import the video here:",
       guide_1: 'Open <b>Settings → Control Center</b> and add <b>Screen Recording</b>.',
@@ -427,7 +446,7 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
       back: '‹ 戻る',
       screen_notice: '<b>iPhoneの確認画面で「画面全体を共有」をタップ</b>すると、Safari以外も録画できます（初期選択の「Safari」はこのアプリのみ）。他のアプリの音声は通常含まれず、Safariを離れると一時停止する場合があります。音声つきで確実に録画するには、下の別の方法を使ってください。',
       alt_method: '別の方法: コントロールセンター ›',
-      ambient_notice: '<b>この画面を開いたままにしてください。</b>アプリを切り替えたりロックしたりすると、iPhoneはWebアプリを一時停止します。録音中は画面が消えないようにしています。音源の近くに端末を置くと、きれいに録音できます。',
+      ambient_notice: '<b>この画面を開いたままにしてください。</b>アプリを切り替えたりロックしたりすると、iPhoneはWebアプリを一時停止します。録音中は画面が消えないようにしています。音源の近くに端末を置くと、きれいに録音できます。<br><br><b>注意:</b> iPhoneでは、録音中に他のアプリの音楽や音声が一時停止したり音量が下がったりすることがあります。このモードは、生の声や周囲の環境音を録るためのものです。',
       guide_title: '📱 スマホ全体を録画（どのアプリでも音声つき）',
       guide_intro: 'iPhoneのSafariでは他のアプリを録画できません。iPhone標準の画面収録を使い、できた動画をここに取り込んでください。',
       guide_1: '<b>設定 → コントロールセンター</b>を開き、<b>画面収録</b>を追加します。',
@@ -476,6 +495,13 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
       m_import_fail: '取り込めませんでした: {m}',
       m_imported: '{n}件をライブラリに取り込みました。',
       m_import_none: '動画または音声ファイルが選択されませんでした。',
+      btn_transcribe: '文字起こし',
+      m_transcribe_start: '聞き取り中… 録音を再生するか、マイクの近くで話してください。',
+      m_transcribe_done: '文字起こしが完了しました。',
+      m_transcribe_unsupported: 'このブラウザではリアルタイム文字起こしに対応していません。後からローカルのWhisperモデルを追加できます。',
+      m_transcribe_error: '文字起こしに失敗しました: {m}',
+      main_import_ios: '📥 写真から取り込む',
+      guide_import_hint: 'コントロールセンターで録画したあと、ここで動画を取り込んでください。',
       m_lib_unavail: 'ローカルライブラリを利用できません: {m}',
       m_lib_nosupport: 'お使いのブラウザはローカル保存に対応していません。',
       m_lib_load: 'ローカルの録音を読み込めませんでした: {m}',
@@ -511,7 +537,7 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
     applyLang(l);
   }
   function modeTexts() {
-    const noScreen = mode === 'screen' && !navigator.mediaDevices?.getDisplayMedia;
+    const noScreen = mode === 'screen' && (isIOS || !navigator.mediaDevices?.getDisplayMedia);
     $('modeTitle').textContent = t('title_' + mode);
     $('modeDescription').textContent = noScreen ? t('desc_noscreen') : t('desc_' + mode);
   }
@@ -979,12 +1005,17 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
     mode = m;
     $('home').classList.add('hidden');
     $('recorder').classList.remove('hidden');
-    const noScreen = m === 'screen' && !navigator.mediaDevices?.getDisplayMedia;
+    // On iOS, getDisplayMedia is too limited for real screen+audio → always guide user to Control Center + Import
+    const noScreen = m === 'screen' && (isIOS || !navigator.mediaDevices?.getDisplayMedia);
     modeTexts();
     $('screenNotice').classList.toggle('hidden', m !== 'screen' || noScreen);
     $('screenGuide').classList.toggle('hidden', !noScreen);
     $('ambientNotice').classList.toggle('hidden', m !== 'ambient');
     $('idleControls').classList.toggle('hidden', noScreen);
+    // When guide is shown, make Import the primary action
+    if (noScreen && $('importBtn')) {
+      $('importBtn').textContent = t('main_import_ios') || t('main_import');
+    }
     $('livePreview').classList.add('hidden');
     $('timer').textContent = '00:00';
     setStatus('s_ready');
@@ -1086,11 +1117,84 @@ footer .copy { font-weight: 800; margin-bottom: 2px; }
   $('shareBtn').onclick = () => blob && shareBlob(blob, filename($('recordName').value, currentMime));
   $('refreshLibrary').onclick = renderLibrary;
 
+  // ——— Local Transcription (Web Speech API) ———
+  function startTranscribe() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      message('m_transcribe_unsupported');
+      const box = $('transcriptBox');
+      if (box) {
+        box.classList.remove('hidden');
+        box.textContent = t('m_transcribe_unsupported');
+      }
+      return;
+    }
+    const rec = new SR();
+    rec.lang = lang === 'ja' ? 'ja-JP' : 'en-US';
+    rec.continuous = true;
+    rec.interimResults = true;
+    let finalText = '';
+    const box = $('transcriptBox');
+    if (box) {
+      box.classList.remove('hidden');
+      box.textContent = t('m_transcribe_start');
+    }
+    message('m_transcribe_start');
+    rec.onresult = (e) => {
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) finalText += r[0].transcript + ' ';
+        else interim += r[0].transcript;
+      }
+      if (box) box.textContent = (finalText + interim).trim() || t('m_transcribe_start');
+    };
+    rec.onerror = (e) => {
+      message('m_transcribe_error', { m: e.error || 'unknown' });
+    };
+    rec.onend = () => {
+      if (finalText.trim()) message('m_transcribe_done');
+    };
+    try { rec.start(); } catch (e) {
+      message('m_transcribe_error', { m: e.message });
+    }
+  }
+  if ($('transcribeBtn')) $('transcribeBtn').onclick = startTranscribe;
+
+  // ——— Share Target: pick up files shared from Photos / Files ———
+  async function handleSharedImport() {
+    const params = new URLSearchParams(location.search);
+    if (params.get('shared') !== '1') return;
+    const key = params.get('key');
+    if (!key) return;
+    try {
+      const cache = await caches.open('recvoicenow-v1.6.0-shared');
+      const resp = await cache.match(key);
+      if (!resp) return;
+      const blob = await resp.blob();
+      const name = resp.headers.get('X-Filename') || 'Shared recording';
+      const mime = blob.type || 'video/mp4';
+      await saveRecord({
+        name: name.replace(/\.[^.]+$/, '').slice(0, 80) || 'Shared recording',
+        type: mime.startsWith('video') ? 'screen' : 'voice',
+        mime, duration: 0, size: blob.size, createdAt: Date.now(), blob
+      });
+      message('m_imported', { n: 1 });
+      await renderLibrary();
+      // Clean URL
+      history.replaceState({}, '', location.pathname);
+      await cache.delete(key);
+    } catch (e) {
+      message('m_import_fail', { m: e.message });
+    }
+  }
+
   // Boot
   (async () => {
     try {
       db = await openDB();
       await renderLibrary();
+      await handleSharedImport();
     } catch (e) {
       message('m_lib_unavail', { m: e.message });
       $('library').textContent = t('m_lib_nosupport');

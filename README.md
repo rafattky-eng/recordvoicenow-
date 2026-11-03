@@ -1,4 +1,4 @@
-# RecVoiceNow · V1.5.0
+# RecVoiceNow · V1.6.0
 
 A private, static, browser-only voice & screen recorder designed for iPhone (Safari) and modern browsers.  
 Microphone and screen recordings stay in IndexedDB on the device — **no account, no server upload**.
@@ -18,6 +18,10 @@ Microphone and screen recordings stay in IndexedDB on the device — **no accoun
 - Reset button returns to step 1 (discards the current take)
 - Installable PWA (Add to Home Screen on iPhone)
 - Offline app shell via Service Worker
+- **iOS Screen Recording flow**: On iPhone, Screen mode hides the web REC button and shows a clear Control Center + Import guide
+- **Share Target**: Share videos/audio from the Photos app directly into RecVoiceNow
+- **Local transcription** button (Web Speech API where supported)
+- Improved Ambient / Room & Speaker warning about iPhone audio ducking
 
 ## Important iPhone / Safari notes
 
@@ -33,7 +37,7 @@ Microphone and screen recordings stay in IndexedDB on the device — **no accoun
 ```
 index.html      # App UI + logic
 manifest.json   # PWA manifest
-sw.js           # Service Worker (cache version: recordvoicenow-v1.4.1)
+sw.js           # Service Worker (cache version: recvoicenow-v1.6.0)
 logo.svg        # Icon-only logo mark (header + favicon)
 icon-192.png    # PWA icon (full logo with wordmark)
 apple-touch-icon.png  # iPhone Home Screen icon (180x180)
@@ -109,4 +113,4 @@ Recommended sizes: 192×192 and 512×512, with the same rounded-rect background 
 ## License / Copyright
 
 © 2026 Rafat Kotaki. All rights reserved.  
-RecVoiceNow · V1.5.0
+RecVoiceNow · V1.6.0
