@@ -3,392 +3,149 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
-<meta name="theme-color" content="#07111f">
+<meta name="theme-color" content="#05070c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RecVoiceNow">
 <meta name="description" content="Save any sound on your iPhone in seconds. Private, no account, stored only on this device.">
 <link rel="manifest" href="./manifest.json">
-<link rel="icon" href="./apple-touch-icon.png">
+<link rel="icon" href="./apple-touch-icon.png" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <title>RecVoiceNow — Save Any Sound</title>
 <style>
-:root {
-  --bg: #07111f;
-  --panel: #0c1a30;
-  --panel2: #12243f;
-  --ink: #ffffff;
-  --muted: #9eb3d0;
-  --gold: #f5c400;
-  --gold2: #e0b000;
-  --goldtxt: #0a0a0a;
-  --line: rgba(245,196,0,.35);
-  --red: #e11d48;
-  --green: #22c55e;
-  --blue: #3b82f6;
-  --shadow: 0 12px 40px rgba(0,0,0,.45);
-  --radius: 18px;
-  --safe-t: env(safe-area-inset-top);
-  --safe-b: env(safe-area-inset-bottom);
+:root, [data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #05070c; --panel: #0c1526; --panel2: #121e36; --ink: #f5f1e8; --muted: #8fa3c4;
+  --line: rgba(212,176,98,.22); --gold: #d4b062; --gold2: #b8923f; --goldtxt: #1a1305;
+  --red: #e11d48; --green: #22c55e; --blue: #3b82f6;
+  --shadow: 0 12px 40px rgba(0,0,0,.5); --radius: 20px;
+  --safe-t: env(safe-area-inset-top); --safe-b: env(safe-area-inset-bottom);
+}
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f6f1e6; --panel: #ffffff; --panel2: #f3ecda; --ink: #0f1b33; --muted: #5a6b86;
+  --line: rgba(160,120,40,.28); --gold: #b8862b; --gold2: #946a1c; --goldtxt: #fff;
+  --shadow: 0 8px 28px rgba(40,30,10,.1);
 }
 * { box-sizing: border-box; margin: 0; }
 html { background: var(--bg); }
 body {
-  min-height: 100vh;
-  background: var(--bg);
-  color: var(--ink);
+  min-height: 100vh; background: var(--bg); color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
   padding: calc(12px + var(--safe-t)) 16px calc(28px + var(--safe-b));
-  -webkit-font-smoothing: antialiased;
-  line-height: 1.45;
+  -webkit-font-smoothing: antialiased; line-height: 1.45;
 }
 button, input { font: inherit; border: 0; }
-button {
-  cursor: pointer;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
+button { cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 button:disabled { opacity: .45; cursor: not-allowed; }
 .hidden { display: none !important; }
 .app { max-width: 520px; margin: 0 auto; }
-
-/* Header — match FindJob Now */
-.top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(255,255,255,.08);
-}
-.logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  flex-shrink: 0;
-  object-fit: cover;
-}
-.brand {
-  flex: 1;
-  min-width: 0;
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: -.3px;
-  color: #fff;
-}
+.top { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.logo { width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0; }
+.brand { flex: 1; min-width: 0; }
+.brand strong { display: block; font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
+.brand span { font-size: 11px; color: var(--muted); }
 .tools { display: flex; gap: 6px; }
 .tool {
-  min-width: 40px;
-  height: 36px;
-  padding: 0 12px;
-  border-radius: 10px;
-  background: var(--panel2);
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 800;
-  display: grid;
-  place-items: center;
+  width: 40px; height: 40px; border-radius: 12px; background: var(--panel);
+  border: 1px solid var(--line); color: var(--ink); display: grid; place-items: center;
+  font-size: 13px; font-weight: 800;
 }
-.tool.on {
-  background: var(--gold);
-  color: var(--goldtxt);
-}
-
-/* Trust */
-.trust {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-  margin-bottom: 22px;
-}
+.tool.on { background: linear-gradient(145deg, var(--gold), var(--gold2)); color: var(--goldtxt); border-color: transparent; }
+.trust { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
 .trust span {
-  font-size: 12px;
-  font-weight: 650;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(245,196,0,.1);
-  border: 1px solid var(--line);
-  color: var(--gold);
+  font-size: 12px; font-weight: 650; padding: 6px 11px; border-radius: 999px;
+  background: color-mix(in srgb, var(--gold) 12%, var(--panel)); border: 1px solid var(--line); color: var(--gold);
 }
-
-/* Hero */
-.hero {
-  text-align: center;
-  padding: 6px 4px 24px;
-}
-.hero h1 {
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: -.6px;
-  line-height: 1.2;
-  margin-bottom: 12px;
-  color: #fff;
-}
-.hero p {
-  color: var(--muted);
-  font-size: 15px;
-  max-width: 360px;
-  margin: 0 auto;
-}
-
-/* Use-case cards */
-.cases {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 22px;
-}
+.hero { text-align: center; padding: 8px 4px 22px; }
+.hero h1 { font-size: 28px; font-weight: 800; letter-spacing: -.7px; line-height: 1.15; margin-bottom: 10px; }
+.hero p { color: var(--muted); font-size: 15px; max-width: 340px; margin: 0 auto 18px; }
+.cases { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
 .case {
-  background: var(--panel);
-  border: 1.5px solid var(--line);
-  border-radius: 16px;
-  padding: 16px 14px;
-  text-align: left;
-  color: var(--ink);
-  box-shadow: var(--shadow);
-  transition: transform .15s, border-color .15s;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px 14px;
+  text-align: left; color: var(--ink); box-shadow: var(--shadow); transition: transform .15s;
 }
-.case:active { transform: scale(.97); border-color: var(--gold); }
+.case:active { transform: scale(.97); }
 .case .emoji { font-size: 24px; margin-bottom: 8px; display: block; }
-.case strong { display: block; font-size: 14px; font-weight: 750; margin-bottom: 3px; color: #fff; }
-.case small { font-size: 11px; color: var(--muted); line-height: 1.35; }
-
-/* Actions */
-.actions { display: grid; gap: 12px; margin-bottom: 20px; }
+.case strong { display: block; font-size: 14px; font-weight: 750; margin-bottom: 2px; }
+.case small { font-size: 11px; color: var(--muted); line-height: 1.3; }
+.actions { display: grid; gap: 10px; margin-bottom: 18px; }
 .btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 54px;
-  padding: 14px 18px;
-  border-radius: 14px;
-  font-weight: 750;
-  font-size: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 54px; padding: 14px 18px; border-radius: 16px; font-weight: 750; font-size: 16px;
   transition: transform .12s;
 }
 .btn:active { transform: scale(.97); }
-.btn-gold {
-  background: var(--gold);
-  color: var(--goldtxt);
-  box-shadow: 0 8px 28px rgba(245,196,0,.3);
-}
-.btn-outline {
-  background: transparent;
-  border: 1.5px solid var(--gold);
-  color: var(--gold);
-}
-.btn-ghost {
-  background: var(--panel);
-  border: 1px solid rgba(255,255,255,.12);
-  color: #fff;
-}
+.btn-gold { background: linear-gradient(145deg, var(--gold), var(--gold2)); color: var(--goldtxt); box-shadow: 0 8px 24px rgba(212,176,98,.28); }
+.btn-blue { background: linear-gradient(145deg, #3b82f6, #1d4ed8); color: #fff; box-shadow: 0 8px 22px rgba(37,99,235,.3); }
+.btn-ghost { background: var(--panel); border: 1px solid var(--line); color: var(--ink); }
 .btn-danger { background: var(--red); color: #fff; }
 .btn-green { background: var(--green); color: #fff; }
-.btn-blue {
-  background: linear-gradient(145deg, #3b82f6, #1d4ed8);
-  color: #fff;
-  box-shadow: 0 8px 22px rgba(37,99,235,.28);
-}
-.btn-sm {
-  min-height: 42px;
-  padding: 10px 14px;
-  font-size: 13px;
-  border-radius: 12px;
-}
-
-/* Panel / cards */
+.btn-sm { min-height: 42px; padding: 10px 14px; font-size: 13px; border-radius: 12px; }
 .panel {
-  background: var(--panel);
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius);
-  padding: 18px;
-  box-shadow: var(--shadow);
-  margin-bottom: 14px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 18px; box-shadow: var(--shadow); margin-bottom: 14px;
 }
-.panel h2 {
-  font-size: 18px;
-  font-weight: 750;
-  margin-bottom: 6px;
-  color: #fff;
-}
+.panel h2 { font-size: 18px; font-weight: 750; margin-bottom: 6px; }
 .muted { color: var(--muted); font-size: 14px; line-height: 1.5; }
-.back {
-  background: transparent;
-  color: var(--gold);
-  font-weight: 700;
-  font-size: 15px;
-  padding: 4px 0 12px;
-}
-
-/* Recording */
-.status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--muted);
-  margin: 8px 0 12px;
-}
-.dot {
-  width: 9px; height: 9px;
-  border-radius: 50%;
-  background: #64748b;
-}
-.dot.live {
-  background: var(--red);
-  box-shadow: 0 0 0 6px rgba(225,29,72,.2);
-  animation: pulse 1.4s infinite;
-}
-@keyframes pulse {
-  50% { box-shadow: 0 0 0 12px rgba(225,29,72,.05); }
-}
-.timer {
-  font-size: 48px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-  margin: 12px 0 16px;
-  color: #fff;
-}
-.visual {
-  height: 72px;
-  width: 100%;
-  background: rgba(245,196,0,.08);
-  border-radius: 14px;
-  margin-bottom: 18px;
-  display: block;
-  border: 1px solid var(--line);
-}
+.back { background: transparent; color: var(--gold); font-weight: 700; font-size: 15px; padding: 4px 0 12px; }
+.status { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin: 8px 0 12px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: #64748b; }
+.dot.live { background: var(--red); box-shadow: 0 0 0 6px rgba(225,29,72,.2); animation: pulse 1.4s infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 12px rgba(225,29,72,.05); } }
+.timer { font-size: 48px; font-weight: 700; letter-spacing: 1px; text-align: center; font-variant-numeric: tabular-nums; margin: 12px 0 16px; }
+.visual { height: 72px; width: 100%; background: color-mix(in srgb, var(--gold) 8%, var(--panel)); border-radius: 14px; margin-bottom: 18px; display: block; }
 .rec {
-  width: 88px; height: 88px;
-  border-radius: 50%;
-  background: var(--red);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 800;
-  box-shadow: 0 0 0 12px rgba(225,29,72,.15);
-  margin: 0 auto;
-  display: grid;
-  place-items: center;
-  transition: transform .12s;
+  width: 88px; height: 88px; border-radius: 50%; background: var(--red); color: #fff;
+  font-size: 14px; font-weight: 800; box-shadow: 0 0 0 12px rgba(225,29,72,.15);
+  margin: 0 auto; display: grid; place-items: center; transition: transform .12s;
 }
 .rec:active { transform: scale(.94); }
-.controls {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
-
-/* Guide — gold border card like FindJob */
-.guide {
-  background: var(--panel2);
-  border: 1.5px solid var(--gold);
-  border-radius: 16px;
-  padding: 16px;
-  margin: 12px 0;
-}
-.guide h3 {
-  font-size: 15px;
-  font-weight: 750;
-  margin-bottom: 10px;
-  color: var(--gold);
-}
-.guide ol {
-  padding-left: 18px;
-  margin: 0 0 14px;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.55;
-}
+.controls { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.guide { background: var(--panel2); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin: 12px 0; }
+.guide h3 { font-size: 15px; font-weight: 750; margin-bottom: 10px; }
+.guide ol { padding-left: 18px; margin: 0 0 14px; color: var(--muted); font-size: 13px; line-height: 1.55; }
 .guide li { margin-bottom: 6px; }
-.guide li b { color: #fff; }
-
+.guide li b { color: var(--ink); }
 .notice {
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: rgba(245,196,0,.08);
-  border: 1px solid var(--line);
-  font-size: 13px;
-  line-height: 1.5;
-  margin: 10px 0;
-  color: var(--muted);
+  padding: 12px 14px; border-radius: 14px;
+  background: color-mix(in srgb, #eab308 10%, var(--panel));
+  border: 1px solid color-mix(in srgb, #ca8a04 30%, transparent);
+  font-size: 13px; line-height: 1.5; margin: 10px 0;
 }
-
-/* Library */
-.lib-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
+.lib-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
 .search {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: var(--bg);
-  color: var(--ink);
-  margin-bottom: 12px;
+  width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--ink); margin-bottom: 12px;
 }
 .storage { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
-.lib-item { padding: 14px 0; border-top: 1px solid rgba(255,255,255,.08); }
+.lib-item { padding: 14px 0; border-top: 1px solid var(--line); }
 .lib-item:first-child { border-top: 0; }
-.lib-title { font-weight: 700; font-size: 15px; overflow-wrap: anywhere; color: #fff; }
+.lib-title { font-weight: 700; font-size: 15px; overflow-wrap: anywhere; }
 .lib-meta { font-size: 12px; color: var(--muted); margin: 4px 0 10px; }
 .lib-actions { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip {
-  padding: 8px 12px;
-  border-radius: 10px;
-  background: var(--bg);
-  border: 1px solid rgba(255,255,255,.12);
-  color: var(--ink);
-  font-size: 12px;
-  font-weight: 650;
+  padding: 8px 12px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line);
+  color: var(--ink); font-size: 12px; font-weight: 650;
 }
 .field {
-  width: 100%;
-  padding: 13px 14px;
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 12px;
-  background: var(--bg);
-  color: var(--ink);
-  margin: 8px 0 12px;
+  width: 100%; padding: 13px 14px; border: 1px solid var(--line); border-radius: 12px;
+  background: var(--bg); color: var(--ink); margin: 8px 0 12px;
 }
-footer {
-  text-align: center;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.55;
-  padding: 20px 8px 8px;
-}
-audio, video {
-  width: 100%;
-  margin: 10px 0;
-  border-radius: 12px;
-  background: #000;
-  max-height: 240px;
-}
-@media (max-width: 380px) {
-  .hero h1 { font-size: 24px; }
-  .timer { font-size: 40px; }
-}
+footer { text-align: center; color: var(--muted); font-size: 11px; line-height: 1.55; padding: 20px 8px 8px; }
+audio, video { width: 100%; margin: 10px 0; border-radius: 12px; background: #000; max-height: 240px; }
+@media (max-width: 380px) { .hero h1 { font-size: 24px; } .timer { font-size: 40px; } }
 </style>
 </head>
 <body>
 <main class="app">
   <header class="top">
     <img class="logo" src="./logo-header.png" alt="">
-    <div class="brand">RecVoiceNow</div>
+    <div class="brand"><strong>RecVoiceNow</strong><span data-i18n="tagline">Private · On this device</span></div>
     <div class="tools">
-      <button type="button" class="tool on" id="langEn" title="English">EN</button>
-      <button type="button" class="tool" id="langJa" title="日本語">JP</button>
+      <button type="button" class="tool lang on" id="langEn" title="English">EN</button>
+      <button type="button" class="tool lang" id="langJa" title="日本語">JP</button>
+      <button type="button" class="tool" id="themeToggle" aria-label="Theme">◐</button>
     </div>
   </header>
 
@@ -399,49 +156,22 @@ audio, video {
       <span data-i18n="b_free">✅ Free</span>
       <span data-i18n="b_device">✅ Saved On This Device</span>
     </div>
-
     <div class="hero">
       <h1 data-i18n="hero_title">Save Any Sound<br>In Seconds</h1>
       <p data-i18n="hero_sub">Record voice notes, music practice, meetings, lectures, speaker audio and more.</p>
     </div>
-
     <div class="cases">
-      <button type="button" class="case" data-mode="voice">
-        <span class="emoji">🎤</span>
-        <strong data-i18n="c_voice">Voice Notes</strong>
-        <small data-i18n="c_voice_s">Quick memos & ideas</small>
-      </button>
-      <button type="button" class="case" data-mode="ambient">
-        <span class="emoji">🎵</span>
-        <strong data-i18n="c_song">Song Practice</strong>
-        <small data-i18n="c_song_s">Capture speaker audio</small>
-      </button>
-      <button type="button" class="case" data-mode="voice">
-        <span class="emoji">🎧</span>
-        <strong data-i18n="c_ideas">Audio Ideas</strong>
-        <small data-i18n="c_ideas_s">Capture inspiration</small>
-      </button>
-      <button type="button" class="case" data-mode="ambient">
-        <span class="emoji">📚</span>
-        <strong data-i18n="c_lectures">Lectures</strong>
-        <small data-i18n="c_lectures_s">Room & speaker sound</small>
-      </button>
-      <button type="button" class="case" data-mode="voice">
-        <span class="emoji">💼</span>
-        <strong data-i18n="c_meetings">Meetings</strong>
-        <small data-i18n="c_meetings_s">Voice notes on the go</small>
-      </button>
-      <button type="button" class="case" data-mode="other">
-        <span class="emoji">🔊</span>
-        <strong data-i18n="c_speaker">Other Apps</strong>
-        <small data-i18n="c_speaker_s">Import from Photos</small>
-      </button>
+      <button type="button" class="case" data-mode="voice"><span class="emoji">🎤</span><strong data-i18n="c_voice">Voice Notes</strong><small data-i18n="c_voice_s">Quick memos & ideas</small></button>
+      <button type="button" class="case" data-mode="ambient"><span class="emoji">🎵</span><strong data-i18n="c_song">Song Practice</strong><small data-i18n="c_song_s">Capture speaker audio</small></button>
+      <button type="button" class="case" data-mode="voice"><span class="emoji">🎧</span><strong data-i18n="c_ideas">Audio Ideas</strong><small data-i18n="c_ideas_s">Capture inspiration</small></button>
+      <button type="button" class="case" data-mode="ambient"><span class="emoji">📚</span><strong data-i18n="c_lectures">Lectures</strong><small data-i18n="c_lectures_s">Room & speaker sound</small></button>
+      <button type="button" class="case" data-mode="voice"><span class="emoji">💼</span><strong data-i18n="c_meetings">Meetings</strong><small data-i18n="c_meetings_s">Voice notes on the go</small></button>
+      <button type="button" class="case" data-mode="other"><span class="emoji">🔊</span><strong data-i18n="c_speaker">Other Apps</strong><small data-i18n="c_speaker_s">Import from Photos</small></button>
     </div>
-
     <div class="actions">
       <button type="button" class="btn btn-gold" id="startVoice" data-i18n="cta_voice">🎙️ Record Voice</button>
       <button type="button" class="btn btn-blue" id="startOther" data-i18n="cta_other">📱 Record From Other Apps</button>
-      <button type="button" class="btn btn-outline" id="goLibrary" data-i18n="cta_library">📂 My Recordings</button>
+      <button type="button" class="btn btn-ghost" id="goLibrary" data-i18n="cta_library">📂 My Recordings</button>
     </div>
   </section>
 
@@ -449,7 +179,6 @@ audio, video {
     <button type="button" class="back" id="backHome" data-i18n="back">‹ Back</button>
     <h2 id="modeTitle">Voice Recording</h2>
     <p class="muted" id="modeDesc">Microphone recording</p>
-
     <div id="otherGuide" class="guide hidden">
       <h3 data-i18n="guide_title">📱 Record sound from other apps</h3>
       <p class="muted" style="margin-bottom:10px" data-i18n="guide_why">Apple does not allow websites to directly record audio from other apps. Use the iPhone Screen Recording tool, then import here.</p>
@@ -463,25 +192,17 @@ audio, video {
       </ol>
       <button type="button" class="btn btn-blue" id="importBtn" data-i18n="btn_import">📥 Import from Photos</button>
     </div>
-
     <div id="ambientNote" class="notice hidden" data-i18n-html="ambient_note"></div>
-
     <div id="recUI">
-      <div class="status">
-        <span class="dot" id="statusDot"></span>
-        <span id="statusText">Ready</span>
-      </div>
+      <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">Ready</span></div>
       <div class="timer" id="timer">00:00</div>
       <canvas id="wave" class="visual" width="600" height="100" aria-label="Audio level"></canvas>
-      <div class="controls" id="idleControls">
-        <button type="button" class="rec" id="startBtn">● REC</button>
-      </div>
+      <div class="controls" id="idleControls"><button type="button" class="rec" id="startBtn">● REC</button></div>
       <div class="controls hidden" id="activeControls">
         <button type="button" class="btn btn-ghost btn-sm" id="pauseBtn" data-i18n="btn_pause">Pause</button>
         <button type="button" class="btn btn-danger btn-sm" id="stopBtn" data-i18n="btn_stop">Stop</button>
       </div>
     </div>
-
     <div id="previewArea" class="hidden">
       <h2 style="margin-top:8px" data-i18n="preview">Preview</h2>
       <audio id="audioPreview" controls class="hidden"></audio>
@@ -489,7 +210,7 @@ audio, video {
       <label class="muted" for="recordName" data-i18n="rec_name">Name</label>
       <input id="recordName" class="field" maxlength="80" value="Recording">
       <div class="controls">
-        <button type="button" class="btn btn-gold" id="saveBtn" data-i18n="btn_save">Save</button>
+        <button type="button" class="btn btn-green" id="saveBtn" data-i18n="btn_save">Save</button>
         <button type="button" class="btn btn-ghost btn-sm" id="downloadBtn" data-i18n="btn_download">Download</button>
         <button type="button" class="btn btn-ghost btn-sm" id="shareBtn" data-i18n="btn_share">Share</button>
         <button type="button" class="btn btn-ghost btn-sm" id="transcribeBtn" data-i18n="btn_transcribe">Transcribe</button>
@@ -513,7 +234,7 @@ audio, video {
   <input type="file" id="importFile" accept="video/*,audio/*" multiple class="hidden">
   <footer>
     <div>© 2026 Rafat Kotaki. All rights reserved.</div>
-    <div>RecVoiceNow · V2.2.0</div>
+    <div>RecVoiceNow · V2.0.1</div>
   </footer>
 </main>
 <script>
@@ -521,13 +242,15 @@ audio, video {
 'use strict';
 const $ = id => document.getElementById(id);
 const DB = 'RecordVoiceNowDB', STORE = 'recordings';
-const LANG_KEY = 'rvn-lang';
+const THEME_KEY = 'rvn-theme', LANG_KEY = 'rvn-lang';
 let db, mode = 'voice', stream = null, recorder = null, chunks = [], blob = null;
 let startedAt = 0, elapsed = 0, tick = null, paused = false;
 let audioCtx, analyser, raf, currentMime = 'audio/webm', lang = 'en';
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
 const I18N = {
   en: {
+    tagline: 'Private · On this device',
     b_private: '✅ 100% Private', b_account: '✅ No Account', b_free: '✅ Free', b_device: '✅ Saved On This Device',
     hero_title: 'Save Any Sound\nIn Seconds',
     hero_sub: 'Record voice notes, music practice, meetings, lectures, speaker audio and more.',
@@ -565,6 +288,7 @@ const I18N = {
     a_play: 'Play', a_dl: 'Download', a_share: 'Share', a_ren: 'Rename', a_del: 'Delete'
   },
   ja: {
+    tagline: 'プライベート · この端末のみ',
     b_private: '✅ 完全プライベート', b_account: '✅ アカウント不要', b_free: '✅ 無料', b_device: '✅ この端末に保存',
     hero_title: 'どんな音でも\n数秒で保存',
     hero_sub: 'ボイスメモ、練習、会議、講義、スピーカー音など。',
@@ -612,13 +336,27 @@ function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const val = t(el.dataset.i18n);
-    el.innerHTML = val.includes('\n') ? val.replace(/\n/g, '<br>') : val;
+    el.innerHTML = val.includes('\\n') ? val.replace(/\\n/g, '<br>') : val.includes('\n') ? val.replace(/\n/g, '<br>') : val;
   });
   document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
   $('langEn').classList.toggle('on', lang === 'en');
   $('langJa').classList.toggle('on', lang === 'ja');
   const search = $('searchLib');
   if (search) search.placeholder = lang === 'ja' ? '録音を検索…' : 'Search recordings…';
+}
+function applyTheme(theme) {
+  if (theme === 'light' || theme === 'dark') document.documentElement.setAttribute('data-theme', theme);
+  else document.documentElement.removeAttribute('data-theme');
+}
+function initTheme() {
+  const s = localStorage.getItem(THEME_KEY);
+  if (s === 'light' || s === 'dark') applyTheme(s);
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  let next = cur === 'dark' ? 'light' : cur === 'light' ? 'dark' : (matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'dark');
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
 }
 function fmt(ms) {
   const s = Math.floor(ms / 1000);
@@ -757,7 +495,7 @@ function drawWave() {
     i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   }
   ctx.lineWidth = 3;
-  ctx.strokeStyle = '#f5c400';
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--gold').trim() || '#d4b062';
   ctx.stroke();
   raf = requestAnimationFrame(drawWave);
 }
@@ -918,7 +656,7 @@ async function handleShared() {
   const key = params.get('key');
   if (!key) return;
   try {
-    const cache = await caches.open('recvoicenow-v2.2.0-shared');
+    const cache = await caches.open('recvoicenow-v2.0.0-shared');
     const resp = await cache.match(key);
     if (!resp) return;
     const b = await resp.blob();
@@ -954,8 +692,10 @@ $('importFile').onchange = e => importFiles([...e.target.files]);
 $('searchLib').oninput = e => renderLibrary(e.target.value);
 $('langEn').onclick = () => { lang = 'en'; localStorage.setItem(LANG_KEY, 'en'); applyLang(); };
 $('langJa').onclick = () => { lang = 'ja'; localStorage.setItem(LANG_KEY, 'ja'); applyLang(); };
+$('themeToggle').onclick = toggleTheme;
 
 (async () => {
+  initTheme();
   lang = localStorage.getItem(LANG_KEY) === 'ja' ? 'ja' : 'en';
   applyLang();
   try { db = await openDB(); await handleShared(); } catch (_) {}

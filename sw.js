@@ -1,8 +1,8 @@
-/* RecVoiceNow V2.2 — offline shell + share target */
-const CACHE_VERSION = 'recvoicenow-v2.2.0';
+/* RecVoiceNow V2 — offline shell + share target */
+const CACHE_VERSION = 'recvoicenow-v2.0.1';
 const APP_SHELL = [
   './', './index.html', './manifest.json',
-  './logo-header.png', './icon-192.png', './icon-512.png', './apple-touch-icon.png'
+  './logo.svg', './logo-header.png', './icon-192.png', './icon-512.png', './apple-touch-icon.png'
 ];
 
 self.addEventListener('install', e => {
