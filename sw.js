@@ -1,76 +1,57 @@
-// FindJob Now V.118 PWA service worker.
-// Caches the app shell and PDF.js for best-effort offline loading. Live job searches need internet.
-const V = "fj-v218";
-// Works at the domain root (Cloudflare) and in a sub-folder (GitHub Pages: /findjobnow/)
-const BASE = new URL("./", self.location).pathname;
-const SHELL = [BASE, BASE + "index.html", BASE + "manifest.webmanifest", BASE + "icon-192.png", BASE + "icon-512.png", BASE + "apple-touch-icon.png"];
-const PDF = [
-  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"
+/* RecVoiceNow V2.2 — offline shell + share target */
+const CACHE_VERSION = 'recvoicenow-v2.2.0';
+const APP_SHELL = [
+  './', './index.html', './manifest.json',
+  './logo-header.png', './icon-192.png', './icon-512.png', './apple-touch-icon.png'
 ];
-const CDN_HOSTS = new Set(["cdnjs.cloudflare.com", "cdn.jsdelivr.net"]);
 
-self.addEventListener("install", event => {
-  self.skipWaiting();
-  event.waitUntil((async () => {
-    const cache = await caches.open(V);
-    await Promise.all(SHELL.map(async path => {
-      try { const response = await fetch(path, { cache: "reload" }); if (response.ok) await cache.put(path, response); } catch (_) {}
-    }));
-    await Promise.all(PDF.map(async url => {
-      try { const response = await fetch(url, { mode: "no-cors" }); await cache.put(url, response); } catch (_) {}
-    }));
-    await self.skipWaiting();
-  })());
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE_VERSION).then(c => c.addAll(APP_SHELL)).then(() => self.skipWaiting()));
 });
 
-self.addEventListener("activate", event => {
-  event.waitUntil(self.clients.claim());
-  event.waitUntil((async () => {
-    // Delete only this app's old caches; do not clear unrelated apps on the same origin.
-    const keys = await caches.keys();
-    await Promise.all(keys.filter(key => key.startsWith("fj-") && key !== V).map(key => caches.delete(key)));
-    await self.clients.claim();
-  })());
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_VERSION && !k.includes('-shared')).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
 });
 
-self.addEventListener("fetch", event => {
-  const request = event.request;
-  if (request.method !== "GET") return;
-  const url = new URL(request.url);
-  const isNavigation = request.mode === "navigate";
+self.addEventListener('fetch', event => {
+  const req = event.request;
+  const url = new URL(req.url);
 
-  if (url.origin === self.location.origin) {
-    // Do not intercept API or non-GET actions.
-    if (url.pathname.startsWith(BASE + "api/")) return;
+  if (req.method === 'POST' && (url.pathname.endsWith('/') || url.pathname.endsWith('/index.html'))) {
     event.respondWith((async () => {
       try {
-        const response = await fetch(request);
-        if (response && response.ok) {
-          const cache = await caches.open(V);
-          if (isNavigation) await cache.put(BASE, response.clone());
-          else if (SHELL.includes(url.pathname)) await cache.put(request, response.clone());
+        const formData = await req.formData();
+        const file = formData.get('media') || formData.get('file');
+        if (file && file.size) {
+          const cache = await caches.open(CACHE_VERSION + '-shared');
+          const key = './shared-' + Date.now();
+          await cache.put(key, new Response(file, {
+            headers: {
+              'Content-Type': file.type || 'application/octet-stream',
+              'X-Filename': file.name || 'shared-recording'
+            }
+          }));
+          return Response.redirect(url.origin + url.pathname + '?shared=1&key=' + encodeURIComponent(key), 303);
         }
-        return response;
-      } catch (_) {
-        const cache = await caches.open(V);
-        if (isNavigation) return (await cache.match(BASE)) || (await cache.match(BASE + "index.html")) || Response.error();
-        return (await cache.match(request)) || Response.error();
-      }
+      } catch (_) {}
+      return Response.redirect(url.origin + url.pathname, 303);
     })());
     return;
   }
 
-  if (CDN_HOSTS.has(url.hostname)) {
-    event.respondWith((async () => {
-      const cached = await caches.match(request);
-      if (cached) return cached;
-      const response = await fetch(request);
-      if (response && (response.ok || response.type === "opaque")) {
-        const cache = await caches.open(V);
-        await cache.put(request, response.clone());
-      }
-      return response;
-    })());
-  }
+  if (req.method !== 'GET' || url.origin !== self.location.origin) return;
+  event.respondWith(
+    caches.match(req).then(cached =>
+      cached || fetch(req).then(res => {
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE_VERSION).then(c => c.put(req, copy));
+        }
+        return res;
+      }).catch(() => caches.match('./index.html'))
+    )
+  );
 });
