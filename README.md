@@ -1,4 +1,4 @@
-# RecVoiceNow · V2.0.1
+# RecVoiceNow · V2.1
 
 **Save any sound on your iPhone in seconds.**
 
@@ -10,14 +10,24 @@ Private, browser-based voice & ambient recorder. Everything stays on this device
 
 ## Highlights
 
-- Premium dark navy + gold design, mobile-first
-- Clear use-case cards (Voice Notes, Song Practice, Lectures, Meetings, Other Apps…)
+- Premium navy-blue + gold design matching FindJob Now product family
+- Clear finger-pointing instructions for easy iPhone use
+- Use-case cards (Voice Notes, Song Practice, Lectures, Meetings, Other Apps…)
 - One-tap voice / ambient recording with live gold waveform
 - Dedicated **Record From Other Apps** flow for iPhone (Control Center → Import)
 - Local library with search + storage summary
-- EN / JP interface, dark/light theme
+- EN / JP interface (single consistent theme — no light/dark switch)
 - PWA installable + Share Target (share from Photos into the app)
 - Optional live transcription (Web Speech API)
+
+## Design system (shared with FindJob Now)
+
+- Main background: `#0C2340`
+- Card / panel: `#0D3B66`
+- Secondary panel: `#123A5C`
+- Primary gold: `#F4B400`
+- Text: white / light gray
+- Input background: `#0A1F38`
 
 ## iPhone “Other Apps” flow
 
@@ -31,7 +41,7 @@ Apple does not allow websites to record other apps’ audio. RecVoiceNow explain
 
 ## Deploy
 
-Push the folder contents to GitHub, then connect the repo to Cloudflare Pages (or GitHub Pages).  
+Push the folder contents to GitHub, then connect the repo to GitHub Pages (or Cloudflare Pages).  
 No build step required.
 
 ## Privacy
