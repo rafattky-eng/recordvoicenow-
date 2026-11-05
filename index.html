@@ -6,12 +6,12 @@
 <meta name="theme-color" content="#0C2340">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="RecVoiceNow">
+<meta name="apple-mobile-web-app-title" content="RecordVoiceNow">
 <meta name="description" content="Save any sound on your iPhone in seconds. Private, no account, stored only on this device.">
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./apple-touch-icon.png" type="image/png">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-<title>RecVoiceNow — Save Any Sound</title>
+<title>RecordVoiceNow — Save Any Sound</title>
 <style>
 :root {
   color-scheme: dark;
@@ -226,9 +226,9 @@ audio, video {
 <body>
 <main class="app">
   <header class="top">
-    <img class="logo" src="./logo-header.png" alt="RecVoiceNow">
+    <img class="logo" src="./logo-header.png" alt="RecordVoiceNow">
     <div class="brand">
-      <strong>RecVoiceNow</strong>
+      <strong>RecordVoiceNow</strong>
       <span data-i18n="tagline">Private · On this device</span>
     </div>
     <div class="tools">
@@ -336,14 +336,14 @@ audio, video {
   <input type="file" id="importFile" accept="video/*,audio/*" multiple class="hidden">
   <footer>
     <div>© 2026 Rafat Kotaki. All rights reserved.</div>
-    <div>RecVoiceNow · V2.4</div>
+    <div>RecordVoiceNow · V2.5</div>
   </footer>
 </main>
 <script>
 (() => {
 'use strict';
 const $ = id => document.getElementById(id);
-const DB = 'RecordVoiceNowDB', STORE = 'recordings';
+const DB = 'RecVoiceNowDB', STORE = 'recordings';
 const LANG_KEY = 'rvn-lang';
 let db, mode = 'voice', stream = null, recorder = null, chunks = [], blob = null;
 let startedAt = 0, elapsed = 0, tick = null, paused = false;
@@ -581,7 +581,7 @@ async function shareBlob(b, n) {
   if (!navigator.share) return;
   const f = new File([b], n, { type: b.type || 'application/octet-stream' });
   try {
-    if (navigator.canShare && navigator.canShare({ files: [f] })) await navigator.share({ files: [f], title: 'RecVoiceNow' });
+    if (navigator.canShare && navigator.canShare({ files: [f] })) await navigator.share({ files: [f], title: 'RecordVoiceNow' });
   } catch (e) { if (e.name !== 'AbortError') {} }
 }
 
@@ -783,7 +783,7 @@ async function handleShared() {
   const key = params.get('key');
   if (!key) return;
   try {
-    const cache = await caches.open('recvoicenow-v2.4-shared');
+    const cache = await caches.open('recvoicenow-v2.5-shared');
     const resp = await cache.match(key);
     if (!resp) {
       const old = await caches.open('recvoicenow-v2.0.0-shared');

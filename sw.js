@@ -1,5 +1,5 @@
-/* RecVoiceNow V2.4 — offline shell + share target */
-const CACHE_VERSION = 'recvoicenow-v2.4';
+/* RecordVoiceNow V2.5 — offline shell + share target */
+const CACHE_VERSION = 'recvoicenow-v2.5';
 const APP_SHELL = [
   './', './index.html', './manifest.json',
   './logo.svg', './logo-header.png', './icon-192.png', './icon-512.png', './apple-touch-icon.png'
@@ -43,6 +43,16 @@ self.addEventListener('fetch', event => {
   }
 
   if (req.method !== 'GET' || url.origin !== self.location.origin) return;
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE_VERSION).then(c => c.put(req, copy));
+        return res;
+      }).catch(() => caches.match(req).then(r => r || caches.match('./index.html')))
+    );
+    return;
+  }
   event.respondWith(
     caches.match(req).then(cached =>
       cached || fetch(req).then(res => {

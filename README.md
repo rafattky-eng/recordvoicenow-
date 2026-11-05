@@ -1,4 +1,4 @@
-# RecVoiceNow · V2.4
+# RecordVoiceNow · V2.5
 
 **Save any sound on your iPhone in seconds.**
 
@@ -31,7 +31,7 @@ Private, browser-based voice & ambient recorder. Everything stays on this device
 
 ## iPhone “Other Apps” flow
 
-Apple does not allow websites to record other apps’ audio. RecVoiceNow explains this clearly and guides the user:
+Apple does not allow websites to record other apps’ audio. RecordVoiceNow explains this clearly and guides the user:
 
 1. Open Control Center  
 2. Long-press Screen Record → enable Microphone  
