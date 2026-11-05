@@ -1,4 +1,4 @@
-# RecVoiceNow · V2.1
+# RecVoiceNow · V2.3
 
 **Save any sound on your iPhone in seconds.**
 
