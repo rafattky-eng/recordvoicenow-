@@ -1,5 +1,5 @@
-/* RecordVoiceNow V2.6 — offline shell + share target */
-const CACHE_VERSION = 'recvoicenow-v2.6';
+/* RecordVoiceNow V2.7 — offline shell + share target */
+const CACHE_VERSION = 'recvoicenow-v2.7';
 const APP_SHELL = [
   './', './index.html', './manifest.json',
   './logo.svg', './logo-header.png', './icon-192.png', './icon-512.png', './apple-touch-icon.png'

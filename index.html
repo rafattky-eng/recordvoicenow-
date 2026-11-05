@@ -124,9 +124,12 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .panel h2 { font-size: 20px; font-weight: 750; margin-bottom: 6px; color: var(--ink); }
 .muted { color: var(--muted); font-size: 15px; line-height: 1.5; }
 .back {
-  background: transparent; color: var(--gold); font-weight: 700; font-size: 16px;
-  padding: 4px 0 14px; display: inline-block;
+  background: var(--gold); color: #000; font-weight: 800; font-size: 16px;
+  padding: 10px 16px; border-radius: 999px; display: inline-block;
+  position: sticky; top: calc(var(--safe-t) + 8px); z-index: 20; margin-bottom: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.45);
 }
+.back-bottom { width: 100%; margin-top: 14px; }
 
 /* Recording UI */
 .status { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); margin: 8px 0 10px; }
@@ -265,7 +268,7 @@ audio, video {
   </section>
 
   <section id="record" class="panel hidden">
-    <button type="button" class="back" id="backHome" data-i18n="back">‹ Back</button>
+    <button type="button" class="back" id="backHome" data-i18n="back">🏠 Main Menu</button>
     <h2 id="recTitle" data-i18n="title_voice">Voice Recording</h2>
     <p class="muted" id="recDesc" data-i18n="desc_voice">Use your microphone. Perfect for notes, ideas and meetings.</p>
 
@@ -320,10 +323,11 @@ audio, video {
       <div id="transcriptBox" class="notice hidden" style="margin-top:12px;white-space:pre-wrap"></div>
     </div>
     <p class="muted" id="msg" role="status" style="margin-top:12px"></p>
+    <button type="button" class="btn btn-gold back-bottom" id="backHome2" data-i18n="back">🏠 Main Menu</button>
   </section>
 
   <section id="library" class="panel hidden">
-    <button type="button" class="back" id="backFromLib" data-i18n="back">‹ Back</button>
+    <button type="button" class="back" id="backFromLib" data-i18n="back">🏠 Main Menu</button>
     <div class="lib-head">
       <h2 data-i18n="lib_title">My Recordings</h2>
       <button type="button" class="btn btn-blue btn-sm" id="importLib" data-i18n="btn_import">Import</button>
@@ -337,7 +341,7 @@ audio, video {
   <input type="file" id="importFile" accept="video/*,audio/*" multiple class="hidden">
   <footer>
     <div>© 2026 Rafat Kotaki. All rights reserved.</div>
-    <div>RecordVoiceNow · V2.6</div>
+    <div>RecordVoiceNow · V2.7</div>
   </footer>
 </main>
 <script>
@@ -370,7 +374,7 @@ const I18N = {
     c_meetings: 'Meetings', c_meetings_s: 'Voice notes on the go',
     c_speaker: 'Other Apps', c_speaker_s: 'Import from Photos',
     cta_voice: '🎙️ Record Voice', cta_other: '📱 Record From Other Apps', cta_library: '📂 My Recordings',
-    back: '‹ Back',
+    back: '🏠 Main Menu',
     title_voice: 'Voice Recording', title_ambient: 'Room & Speaker Sound', title_other: 'Record From Other Apps',
     desc_voice: 'Use your microphone. Perfect for notes, ideas and meetings.',
     desc_ambient: 'Raw mic — best for capturing sound from speakers or the room.',
@@ -414,7 +418,7 @@ const I18N = {
     c_meetings: '会議', c_meetings_s: '移動中のメモ',
     c_speaker: '他のアプリ', c_speaker_s: '写真から取り込む',
     cta_voice: '🎙️ 音声を録音', cta_other: '📱 他のアプリから録音', cta_library: '📂 録音一覧',
-    back: '‹ 戻る',
+    back: '🏠 メインメニュー',
     title_voice: '音声録音', title_ambient: '周囲・スピーカー音', title_other: '他のアプリから録音',
     desc_voice: 'マイクを使います。メモや会議に最適です。',
     desc_ambient: 'フィルターなしのマイク。スピーカーや部屋の音向け。',
@@ -784,7 +788,7 @@ async function handleShared() {
   const key = params.get('key');
   if (!key) return;
   try {
-    const cache = await caches.open('recvoicenow-v2.6-shared');
+    const cache = await caches.open('recvoicenow-v2.7-shared');
     const resp = await cache.match(key);
     if (!resp) {
       const old = await caches.open('recvoicenow-v2.0.0-shared');
@@ -827,6 +831,7 @@ $('discardBtn').onclick = () => {
   selectMode(mode);
 };
 $('backHome').onclick = () => { if (recorder && recorder.state !== 'inactive') stop(); show('home'); };
+$('backHome2').onclick = () => $('backHome').onclick();
 $('backFromLib').onclick = () => show('home');
 $('startBtn').onclick = start;
 $('pauseBtn').onclick = pause;
