@@ -50,9 +50,9 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 
 /* Header */
 .top { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-.logo { width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0; object-fit: contain; background: transparent; border: none; box-shadow: none; }
+.logo { width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0; object-fit: cover; }
 .brand { flex: 1; min-width: 0; }
-.brand strong { display: block; font-size: 19px; font-weight: 800; letter-spacing: -.3px; color: #FFFFFF; }
+.brand strong { display: block; font-size: 18px; font-weight: 800; letter-spacing: -.3px; color: var(--ink); }
 .brand span { font-size: 12px; color: var(--muted); opacity: .9; }
 .tools { display: flex; gap: 6px; }
 .tool {
@@ -336,7 +336,7 @@ audio, video {
   <input type="file" id="importFile" accept="video/*,audio/*" multiple class="hidden">
   <footer>
     <div>© 2026 Rafat Kotaki. All rights reserved.</div>
-    <div>RecVoiceNow · V2.2</div>
+    <div>RecVoiceNow · V2.1</div>
   </footer>
 </main>
 <script>
@@ -783,7 +783,7 @@ async function handleShared() {
   const key = params.get('key');
   if (!key) return;
   try {
-    const cache = await caches.open('recvoicenow-v2.2-shared');
+    const cache = await caches.open('recvoicenow-v2.1-shared');
     const resp = await cache.match(key);
     if (!resp) {
       const old = await caches.open('recvoicenow-v2.0.0-shared');
