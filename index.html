@@ -310,6 +310,7 @@ audio, video {
       <input id="recordName" class="field" maxlength="80" value="Recording">
       <div class="controls" style="flex-direction:column;gap:10px">
         <button type="button" class="btn btn-green" id="saveBtn" data-i18n="btn_save">Save</button>
+        <button type="button" class="btn btn-danger" id="discardBtn" data-i18n="btn_discard">🗑️ Discard &amp; Record Again</button>
         <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:100%">
           <button type="button" class="btn btn-ghost btn-sm" id="downloadBtn" data-i18n="btn_download">Download</button>
           <button type="button" class="btn btn-ghost btn-sm" id="shareBtn" data-i18n="btn_share">Share</button>
@@ -336,7 +337,7 @@ audio, video {
   <input type="file" id="importFile" accept="video/*,audio/*" multiple class="hidden">
   <footer>
     <div>© 2026 Rafat Kotaki. All rights reserved.</div>
-    <div>RecordVoiceNow · V2.5</div>
+    <div>RecordVoiceNow · V2.6</div>
   </footer>
 </main>
 <script>
@@ -384,7 +385,7 @@ const I18N = {
     g6: 'Come back here and tap <b>Import</b>',
     ambient_note: '<b>Keep this screen open.</b> iPhone pauses web apps when you switch apps. Place the phone near the sound source.<br><br><b>Note:</b> Music from other apps may be paused or lowered while recording.',
     btn_import: '📥 Import from Photos', btn_pause: 'Pause', btn_resume: 'Resume', btn_stop: 'Stop',
-    preview: 'Preview', rec_name: 'Name', btn_save: 'Save', btn_download: 'Download', btn_share: 'Share',
+    preview: 'Preview', rec_name: 'Name', btn_save: 'Save', btn_discard: '🗑️ Discard & Record Again', btn_download: 'Download', btn_share: 'Share',
     btn_transcribe: 'Transcribe', lib_title: 'My Recordings', lib_empty: 'No recordings yet.',
     s_ready: 'Ready to record', s_rec: 'Recording…', s_paused: 'Paused', s_done: 'Ready to save',
     m_saved: 'Saved on this device.', m_perm: 'Please allow microphone access.',
@@ -428,7 +429,7 @@ const I18N = {
     g6: 'ここに戻って<b>取り込む</b>をタップ',
     ambient_note: '<b>この画面を開いたままにしてください。</b>アプリを切り替えるとiPhoneはWebアプリを一時停止します。音源の近くに置いてください。<br><br><b>注意:</b> 録音中、他のアプリの音楽は一時停止したり音量が下がることがあります。',
     btn_import: '📥 写真から取り込む', btn_pause: '一時停止', btn_resume: '再開', btn_stop: '停止',
-    preview: 'プレビュー', rec_name: '名前', btn_save: '保存', btn_download: 'ダウンロード', btn_share: '共有',
+    preview: 'プレビュー', rec_name: '名前', btn_save: '保存', btn_discard: '🗑️ 破棄してもう一度録音', btn_download: 'ダウンロード', btn_share: '共有',
     btn_transcribe: '文字起こし', lib_title: '録音一覧', lib_empty: '録音はまだありません。',
     s_ready: '録音準備完了', s_rec: '録音中…', s_paused: '一時停止中', s_done: '保存できます',
     m_saved: 'この端末に保存しました。', m_perm: 'マイクへのアクセスを許可してください。',
@@ -783,7 +784,7 @@ async function handleShared() {
   const key = params.get('key');
   if (!key) return;
   try {
-    const cache = await caches.open('recvoicenow-v2.5-shared');
+    const cache = await caches.open('recvoicenow-v2.6-shared');
     const resp = await cache.match(key);
     if (!resp) {
       const old = await caches.open('recvoicenow-v2.0.0-shared');
@@ -820,6 +821,11 @@ document.querySelectorAll('.case').forEach(btn => { btn.onclick = () => selectMo
 $('startVoice').onclick = () => selectMode('voice');
 $('startOther').onclick = () => selectMode('other');
 $('goLibrary').onclick = async () => { show('library'); await renderLibrary(); };
+$('discardBtn').onclick = () => {
+  try { const a = $('audioPreview'), v = $('videoPreview'); a.pause(); v.pause(); a.removeAttribute('src'); v.removeAttribute('src'); a.load(); v.load(); } catch (_) {}
+  $('transcriptBox').classList.add('hidden');
+  selectMode(mode);
+};
 $('backHome').onclick = () => { if (recorder && recorder.state !== 'inactive') stop(); show('home'); };
 $('backFromLib').onclick = () => show('home');
 $('startBtn').onclick = start;

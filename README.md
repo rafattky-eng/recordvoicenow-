@@ -1,4 +1,4 @@
-# RecordVoiceNow · V2.5
+# RecordVoiceNow · V2.6
 
 **Save any sound on your iPhone in seconds.**
 
